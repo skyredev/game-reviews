@@ -1,0 +1,19 @@
+# --- Front controller + security for shared hosting (Apache 2.4) ---
+RewriteEngine On
+RewriteBase /~popovego/01/
+
+<FilesMatch "(^|/)(\.env|\.htpasswd|schema\.sql|.*\.sql|config\.php)$">
+    Require all denied
+</FilesMatch>
+
+RewriteRule ^(app|includes|models|views|tools)/ - [F,NC,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
+
+<FilesMatch "\.php$">
+    <If "%{REQUEST_URI} =~ m#^/~popovego/01/public/#">
+        Require all denied
+    </If>
+</FilesMatch>
