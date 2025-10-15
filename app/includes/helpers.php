@@ -10,3 +10,7 @@ function renderView(string $view, array $data = []): string {
 function esc(string $string): string {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
+
+function validateRegister(string $userName, string $email, string $password){
+
+}

@@ -14,9 +14,11 @@ global $pdo;
 $routes = [
     '' => 'HomeController@showHomePage',
     'home' => 'HomeController@showHomePage',
+    'games' => 'GamesController@showHomePage',
     'top' => 'TopController@showTopPage',
     'login' => 'AuthController@showLoginPage',
     'register' => 'AuthController@showRegisterPage',
+    'register/submit' => 'AuthController@registerUser',
     'admin' => 'AdminController@showAdminPage',
 ];
 

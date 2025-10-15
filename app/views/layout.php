@@ -2,20 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= $title ?? 'Game Reviews' ?> </title>
     <link rel="stylesheet" href="<?= APP_BASE ?>/public/css/style.css">
+    <script src="<?= APP_BASE ?>/public/js/main.js"></script>
 </head>
 <body>
-    <?php include __DIR__ . '/partials/header.php'; ?>
+    <header class="site-header">
+        <div class="container">
+            <?php include __DIR__ . '/partials/header.php'; ?>
+        </div>
+    </header>
 
-    <main class="main-content">
-        <?= $content ?? ''; ?>
+    <main>
+        <div class="container">
+            <?= $content ?? ''; ?>
+        </div>
     </main>
 
-    <?php include __DIR__ . '/partials/footer.php'; ?>
-
+    <footer class="site-footer">
+        <div class="container">
+            <?php include __DIR__ . '/partials/footer.php'; ?>
+        </div>
+    </footer>
 </body>
 </html>

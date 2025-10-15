@@ -1,15 +1,36 @@
 <?php
-$title = 'Hlavní stránka';
-ob_start();
+/** @var array $games List of games passed from the controller */
 ?>
 <section class="home-page">
-    <div class="container">
-        <h1>Vítejte na Game Reviews</h1>
-        <p>Objevte recenze nejnovějších her, hodnocení uživatelů a nejnovější herní zprávy.</p>
-        <div class="top-games-container">
-            <h2>Nejlépe hodnocené hry</h2>
-            </div>
+    <h1>Vítejte na Game Reviews</h1>
+    <p>Objevte recenze nejnovějších her, hodnocení uživatelů a nejnovější herní zprávy.</p>
+
+    <div class="top-games-container">
+        <h2>Nejlépe hodnocené hry</h2>
+        <div class="games-list">
+            <?php foreach ($games as $game): ?>
+                <div class="game-card-top">
+                    <div class="game-image">
+                        <img src="<?= htmlspecialchars($game['cover_image']) ?>" alt="<?= htmlspecialchars($game['title']) ?> Cover">
+                    </div>
+                    <div class="game-info">
+                        <h3><?= htmlspecialchars($game['title']) ?></h3>
+                        <div class="rating">
+                            <span><?= number_format($game['average_rating'], 1) ?>/10</span>
+                        </div>
+                        <p class="desc">
+                            <?= htmlspecialchars($game['description'] ?? 'Bez popisu...') ?>
+                        </p>
+                    </div>
+                    <div class="game-summary">
+                        <span><?= number_format($game['average_rating'], 1) ?>/10</span>
+                        <span class="year">Rok vydání: <?= htmlspecialchars($game['release_year'] ?? '—') ?></span>
+                        <a href="/games/<?= $game['id'] ?>" class="btn">Zobrazit více</a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
+    </div>
 </section>
-<?php
-$content = ob_get_clean();
+
+
