@@ -9,7 +9,14 @@
     <ul class="nav-list">
         <li class="nav-item"><a href="<?=APP_BASE ?>/games">Games</a></li>
         <li class="nav-item"><a href="<?=APP_BASE ?>/admin">Admin</a></li>
-        <li class="nav-item"><a href="<?=APP_BASE ?>/login">Login</a></li>
-        <li class="nav-item"><a href="<?=APP_BASE ?>/register">Register</a></li>
+        <?php if (!isLoggedIn()): ?>
+            <li class="nav-item"><a href="<?=APP_BASE ?>/login">Login</a></li>
+            <li class="nav-item"><a href="<?=APP_BASE ?>/register">Register</a></li>
+        <?php endif; ?>
     </ul>
+    <?php if (isLoggedIn()): ?>
+        <a href="<?= APP_BASE ?>/profile">
+            <p><?= htmlspecialchars(currentUser()['username']) ?></p>
+        </a>
+    <?php endif; ?>
 </nav>

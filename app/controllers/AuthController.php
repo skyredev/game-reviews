@@ -1,8 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../models/AuthModel.php';
+require_once __DIR__ . '/../includes/services/validation.php';
+
 
 function showRegisterPage(): void {
+    requireGuest();
+
     $errors = $_SESSION['authErrors'] ?? [];
     $old = $_SESSION['authOld'] ?? [];
 
@@ -17,6 +21,8 @@ function showRegisterPage(): void {
 }
 
 function registerUser(PDO $pdo): bool {
+    requireGuest();
+
     $username = $_POST['username'];
     $name = $_POST['name'];
     $email = $_POST['email'];
