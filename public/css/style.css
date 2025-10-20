@@ -141,9 +141,13 @@ small.error {
     color: #e74c3c;
     font-size: 0.85rem;
     margin-top: 0.25rem;
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
+small.error span {
+    display: block;
+}
 
 .register_form {
     display: flex;
@@ -175,6 +179,10 @@ small.error {
     font-size: 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
+}
+
+.auth_form_box input.error {
+    border-color: #e74c3c;
 }
 
 .auth_form_box input:focus {
