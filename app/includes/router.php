@@ -17,8 +17,11 @@ $routes = [
     'games' => 'GamesController@showHomePage',
     'top' => 'TopController@showTopPage',
     'login' => 'AuthController@showLoginPage',
+    'login/submit' => 'AuthController@loginUser',
     'register' => 'AuthController@showRegisterPage',
     'register/submit' => 'AuthController@registerUser',
+    'logout' => 'AuthController@logoutUser',
+    'forbidden' => 'UtilController@showForbiddenPage',
     'admin' => 'AdminController@showAdminPage',
 ];
 

@@ -6,7 +6,7 @@ function requireGuest(): void {
         exit;
     }
 }
-function requireLogin(): void {
+function requireUser(): void {
     if (empty($_SESSION['user'])) {
         header('Location: ' . APP_BASE . '/login');
         exit;
@@ -14,10 +14,10 @@ function requireLogin(): void {
 }
 
 function requireAdmin(): void {
-    requireLogin();
+    requireUser();
     if ($_SESSION['user']['role'] !== 'admin') {
         http_response_code(403);
-        echo "Přístup odepřen.";
+        header('Location: ' . APP_BASE . '/forbidden');
         exit;
     }
 }

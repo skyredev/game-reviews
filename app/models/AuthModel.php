@@ -41,3 +41,30 @@ function createUser(PDO $pdo, string $username, string $email, string $password,
     return [[], $user];
 }
 
+function doLogin($pdo, $identifier, $password): array {
+    $errors = [];
+
+    $stmt = $pdo->prepare("SELECT id, username, email, pass_hash, role FROM users WHERE username = :identifier OR email = :identifier");
+    $stmt->execute(['identifier' => $identifier]);
+    $existing = $stmt->fetch();
+
+    if (!$existing) {
+        $errors['identifier'][] = 'Takový uživatel nebyl nalezen.';
+        return [$errors, 'NotFound'];
+    }
+
+    if (!password_verify($password, $existing['pass_hash'])) {
+        $errors['password'][] = 'Zadané heslo je špatně, zkuste znovu.';
+        return [$errors, 'WrongPassword'];
+    }
+
+    $user = [
+        'id' => (int)$existing['id'],
+        'username' => $existing['username'],
+        'email' => $existing['email'],
+        'role' => $existing['role']
+    ];
+
+    return [[], $user];
+}
+

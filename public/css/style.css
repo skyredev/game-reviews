@@ -128,7 +128,7 @@ a {
     background: #5a4bd8;
 }
 
-.register_form_container {
+.auth_form {
     display: flex;
     justify-content: center;     /* центр по горизонтали */
     align-items: center;
@@ -149,7 +149,7 @@ small.error span {
     display: block;
 }
 
-.register_form {
+.auth_form_container {
     display: flex;
     flex-direction: column;
     gap: 1rem;

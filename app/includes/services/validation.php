@@ -25,6 +25,28 @@ function validateRegister(string $userName, string $name, string $email, string 
     return $errors;
 }
 
+function validateLogin(string $identifier): array {
+    $errors = [];
+
+    $identifierErrors = getIdentifierErrors($identifier);
+    if (!empty($identifierErrors)) {
+        $errors['identifier'] = $identifierErrors;
+    }
+
+    return $errors;
+}
+
+function getIdentifierErrors(string $identifier): array {
+    if(!filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+        $errors = getUserNameErrors($identifier);
+    } else {
+        $errors = getEmailErrors($identifier);
+    }
+    if(!empty($errors)) return $errors;
+
+    return [];
+}
+
 function getUserNameErrors(string $userName): array {
     $errors = [];
 

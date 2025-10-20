@@ -1,6 +1,6 @@
 <h1>Registrujte se</h1>
-<form class="register_form_container" action="<?=APP_BASE ?>/register/submit" method="POST" autocomplete="off">
-    <div class="register_form">
+<form class="auth_form" action="<?=APP_BASE ?>/register/submit" method="POST" autocomplete="off">
+    <div class="auth_form_container">
         <div class="auth_form_box">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" class="<?= !empty($errors['name']) ? 'error' : '' ?>" value="<?= htmlspecialchars($old['name'] ?? '') ?>" placeholder="Vaše jméno" required>
