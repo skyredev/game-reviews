@@ -80,7 +80,7 @@ function loginUser(PDO $pdo): bool {
     $identifier = $_POST['identifier'];
     $password = $_POST['password'];
 
-    $errors = validateLogin($identifier, $password);
+    $errors = validateLogin($identifier);
 
     if(!empty($errors)) {
         $_SESSION['authOld'] = compact('identifier');
