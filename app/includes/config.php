@@ -25,7 +25,10 @@ function loadEnv($filePath): void
 }
 
 // --- Load .env ---
-loadEnv(__DIR__ . '/../../.env');
+define("BASE_DIR", dirname(__DIR__, 2));
+const PUBLIC_DIR = BASE_DIR . '/public';
+
+loadEnv(BASE_DIR . '/.env');
 
 // --- Constants from ENV ---
 define("DB_HOST", getenv('DB_HOST'));
@@ -52,7 +55,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/services/helpers.php';
 require_once __DIR__ . '/services/auth.php';
 
 

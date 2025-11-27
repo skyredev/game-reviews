@@ -26,6 +26,10 @@ function isLoggedIn(): bool {
     return !empty($_SESSION['user']);
 }
 
+function isAdmin(): bool {
+    return isLoggedIn() && $_SESSION['user']['role'] === 'admin';
+}
+
 function currentUser(): ?array {
     return $_SESSION['user'] ?? null;
 }

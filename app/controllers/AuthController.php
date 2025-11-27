@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../models/AuthModel.php';
 require_once __DIR__ . '/../includes/services/validation.php';
 
-
 function showRegisterPage(): void {
     requireGuest();
 

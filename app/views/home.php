@@ -11,16 +11,11 @@
             <?php foreach ($games as $game): ?>
                 <div class="game-card-top">
                     <div class="game-image">
-                        <img src="<?= htmlspecialchars($game['cover_image']) ?>" alt="<?= htmlspecialchars($game['title']) ?> Cover">
+                        <img src="<?= htmlspecialchars($game['cover_thumb']) ?>" alt="<?= htmlspecialchars($game['title']) ?> Cover">
                     </div>
                     <div class="game-info">
                         <h3><?= htmlspecialchars($game['title']) ?></h3>
-                        <div class="rating">
-                            <span><?= number_format($game['average_rating'], 1) ?>/10</span>
-                        </div>
-                        <p class="desc">
-                            <?= htmlspecialchars($game['description'] ?? 'Bez popisu...') ?>
-                        </p>
+                        <p class="desc"><?= htmlspecialchars($game['description']) ?></p>
                     </div>
                     <div class="game-summary">
                         <span><?= number_format($game['average_rating'], 1) ?>/10</span>

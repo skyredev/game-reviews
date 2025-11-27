@@ -1,1 +1,1 @@
-<p>&copy; <?= date('Y') ?> Game Reviews. All rights reserved.</p>
+<p>&copy; <?= date('Y') ?> Game Reviews. Egor Popov</p>

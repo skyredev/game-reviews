@@ -1,3 +1,10 @@
+/* -------------------------------------------------
+   BASE
+---------------------------------------------------*/
+html, body {
+    height: 100%;
+}
+
 html {
     font-size: 16px;
     font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -13,8 +20,13 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.6;
-    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
     background-color: #fafafa;
+}
+
+main {
+    flex: 1;
 }
 
 a {
@@ -23,33 +35,46 @@ a {
 }
 
 .container {
-    width: 75%;
+    width: 70%;
     margin: auto;
-    overflow: hidden;
 }
+
+/* -------------------------------------------------
+   NAVIGATION
+---------------------------------------------------*/
 
 .site-header {
     width: 100%;
 }
 
+.site-footer {
+    text-align: center;
+    padding: 0.5rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
 .nav-container {
     display: flex;
+    padding: 0.8rem 0;
     align-items: center;
 }
 
 .nav-list {
     display: flex;
-    flex-direction: row;
     font-size: 1.25rem;
-    padding-inline-start: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
 .nav-item {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    list-style: none;
-    padding-left: 0;
+    margin: 0 1rem;
 }
+
+/* -------------------------------------------------
+   GAME CARDS
+---------------------------------------------------*/
 
 .games-list {
     display: flex;
@@ -59,60 +84,51 @@ a {
 }
 
 .game-card-top {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 200px 1fr 220px;
+    gap: 1.5rem;
+    align-items: start;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
-
-    height: 16rem;
-    width: 100%;
-    flex-wrap: nowrap;
+    padding-right: 1rem;
 }
 
 
+/* левый блок */
 .game-image {
-    flex: 0 0 200px;         /* фиксированная ширина */
+    width: 200px;
+    height: 100%;
     overflow: hidden;
 }
 
 .game-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;       /* изображение вписывается */
-    display: block;
+    object-fit: cover;
 }
-
 
 .game-info {
-    flex: 1 1 auto;          /* может расти и сжиматься */
-    min-width: 0;            /* 🔥 это важно, иначе текст расталкивает соседей */
-    padding: 1rem 1.5rem;
-    overflow: hidden;        /* всё, что не помещается — скрывать */
+    min-width: 0;
+    padding: 1rem 0;
+    position: relative;
 }
 
-.game-info p.desc {
-    white-space: normal;     /* перенос строк */
-    word-wrap: break-word;   /* переносить длинные слова */
-    overflow-wrap: anywhere; /* универсальная страховка */
+.game-info .desc {
+    max-height: 9rem;
+    overflow: hidden;
+    position: relative;
+    line-height: 1.6;
 }
 
 .game-summary {
-    flex: 0 0 180px;          /* фиксированная правая колонка */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: flex-end;
-    padding: 1rem;
-    box-sizing: border-box;
-}
-
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    padding: 1rem 0;
+    text-align: right;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
 }
 
 .btn {
@@ -120,7 +136,6 @@ a {
     color: #fff;
     padding: 0.4rem 1rem;
     border-radius: 5px;
-    text-decoration: none;
     font-weight: 500;
 }
 
@@ -128,80 +143,135 @@ a {
     background: #5a4bd8;
 }
 
-.auth_form {
+/* -------------------------------------------------
+   UNIVERSAL FORM STYLES (login, register, add game)
+---------------------------------------------------*/
+
+.form-container {
+    width: 100%;
+    max-width: 520px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+
     display: flex;
-    justify-content: center;     /* центр по горизонтали */
-    align-items: center;
-    flex-direction: column;/* центр по вертикали */
-    min-height: 35vh;
-    gap: 2rem/* чтобы центрировалось по экрану */
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-row label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fafafa;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    border-color: #6c5ce7;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, .2);
+    outline: none;
+}
+
+select[multiple] {
+    height: 140px;
 }
 
 small.error {
     color: #e74c3c;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-    display: flex;
-    flex-direction: column;
+    font-size: 0.8rem;
 }
 
-small.error span {
-    display: block;
-}
+/* Submit button */
 
-.auth_form_container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    max-width: 420px;            /* ограничиваем ширину, но не фиксируем */
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.auth_form_box {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.auth_form_box label {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.auth_form_box input {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.6rem 0.9rem;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    width: 100%;
-}
-
-.auth_form_box input.error {
-    border-color: #e74c3c;
-}
-
-.auth_form_box input:focus {
-    border-color: #6c5ce7;
-    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
-    outline: none;
-}
-
-button[type="submit"] {
+.form-container button[type="submit"] {
+    padding: 0.9rem;
+    font-size: 1.05rem;
     background: #6c5ce7;
-    color: #fff;
-    font-size: 1rem;
-    padding: 0.75rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+    color: white;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background .2s;
 }
 
-button[type="submit"]:hover {
+.form-container button[type="submit"]:hover {
     background: #5a4bd8;
 }
+
+/* -------------------------------------------------
+   ADD GAME PAGE WRAPPER
+---------------------------------------------------*/
+
+.game-create {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ---------------------------------------------
+   CUSTOM MULTISELECT
+----------------------------------------------*/
+
+.multiselect {
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    background: #fafafa;
+    padding: 0.5rem;
+    height: 140px;
+    overflow-y: auto;
+}
+
+.multiselect-option {
+    display: flex;
+    align-items: center;
+    padding: 0.35rem 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 0.6rem;
+}
+
+.multiselect-option:hover {
+    background: #eee;
+}
+
+.multiselect-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #6c5ce7;
+}
+
+.multiselect-option span {
+    font-size: 0.95rem;
+}
+

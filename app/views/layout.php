@@ -19,12 +19,6 @@
         <div class="container">
             <?= $content ?? ''; ?>
         </div>
-        <?php if (APP_DEBUG && !empty($_SESSION['user'])): ?>
-            <pre style="background:#eee;padding:1em;">
-        <?= htmlspecialchars(print_r($_SESSION['user'], true)) ?>
-    </pre>
-        <?php endif; ?>
-
     </main>
 
     <footer class="site-footer">

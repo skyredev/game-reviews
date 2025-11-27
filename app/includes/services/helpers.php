@@ -3,7 +3,7 @@
 function renderView(string $view, array $data = []): string {
     extract($data);
     ob_start();
-    require __DIR__ . '/../views/' . $view . '.php';
+    require BASE_DIR . '/app/views/' . $view . '.php';
     return ob_get_clean();
 }
 

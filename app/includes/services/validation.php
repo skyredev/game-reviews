@@ -108,3 +108,52 @@ function getPasswordErrors(string $password): array {
 
     return $errors;
 }
+
+function validateGame(array $data, ?array $file): array
+{
+    $errors = [];
+
+    if ($data['title'] === '') {
+        $errors['title'][] = 'Název nesmí být prázdný.';
+    }
+
+    if ($data['description'] === '') {
+        $errors['description'][] = 'Popis nesmí být prázdný.';
+    }
+
+    if ($data['publisher'] === '') {
+        $errors['publisher'][] = 'Vydavatel nesmí být prázdný.';
+    }
+
+    if ($data['developer'] === '') {
+        $errors['developer'][] = 'Vývojář nesmí být prázdný.';
+    }
+
+    if (empty($data['genres'])) {
+        $errors['genres'][] = 'Vyberte alespoň jeden žánr.';
+    }
+
+    if (empty($data['platforms'])) {
+        $errors['platforms'][] = 'Vyberte alespoň jednu platformu.';
+    }
+
+    if ($data['release_year'] < 1980 || $data['release_year'] > (int)date('Y')) {
+        $errors['release_year'][] = 'Rok vydání není platný.';
+    }
+
+    if ($file === null || $file['error'] !== UPLOAD_ERR_OK) {
+        $errors['cover_image'][] = 'Obrázek je povinný.';
+        return $errors;
+    }
+
+    // mime check
+    $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    $mime = mime_content_type($file['tmp_name']);
+    if (!in_array($mime, $allowed)) {
+        $errors['cover_image'][] = 'Podporované formáty: JPG, PNG, WEBP.';
+    }
+
+    return $errors;
+}
+
+

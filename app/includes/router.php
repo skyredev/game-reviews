@@ -2,19 +2,20 @@
 /**
  * @file router.php
  * @brief Simple routing mechanism
- */
+ * @var PDO $pdo
+*/
 
 require_once __DIR__ . '/config.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $base = parse_url(APP_BASE, PHP_URL_PATH);
 $path = trim(str_replace($base, '', $uri), '/');
-global $pdo;
 
 $routes = [
     '' => 'HomeController@showHomePage',
     'home' => 'HomeController@showHomePage',
-    'games' => 'GamesController@showHomePage',
+    'games' => 'GamesController@showGamesPage',
+    'games/add' => 'GamesController@submitGame',
     'top' => 'TopController@showTopPage',
     'login' => 'AuthController@showLoginPage',
     'login/submit' => 'AuthController@loginUser',
