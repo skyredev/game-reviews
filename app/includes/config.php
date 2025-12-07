@@ -52,10 +52,19 @@ try {
 }
 
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 86400,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
     session_start();
 }
 
 require_once __DIR__ . '/services/helpers.php';
 require_once __DIR__ . '/services/auth.php';
+require_once __DIR__ . '/services/csrf.php';
 
 

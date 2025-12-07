@@ -5,6 +5,12 @@ require_once __DIR__ . '/../models/TagsModel.php';
 require_once __DIR__ . '/../includes/services/validation.php';
 
 function showGamesPage(PDO $pdo): void {
+    $content = renderView('games/index', []);
+    $title = 'Hry';
+    require __DIR__ . '/../views/layout.php';
+}
+
+function showGamesCreatePage(PDO $pdo): void {
     requireUser();
 
     $errors = $_SESSION['gameErrors'] ?? [];
@@ -14,7 +20,7 @@ function showGamesPage(PDO $pdo): void {
     $genres = getTagsByType($pdo, 'genre');
     $platforms = getTagsByType($pdo, 'platform');
 
-    $content = renderView('games', [
+    $content = renderView('games/create', [
         'errors' => $errors,
         'old' => $old,
         'genres' => $genres,
@@ -27,6 +33,12 @@ function showGamesPage(PDO $pdo): void {
 
 function submitGame(PDO $pdo): void {
     requireUser();
+
+    if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
+        $_SESSION['gameErrors'] = ['csrf' => ['Neplatný bezpečnostní token.']];
+        header('Location: ' . APP_BASE . '/games/create');
+        exit;
+    }
 
     $data = [
         'title' => trim($_POST['title'] ?? ''),
@@ -43,7 +55,7 @@ function submitGame(PDO $pdo): void {
     if (!empty($errors)) {
         $_SESSION['gameErrors'] = $errors;
         $_SESSION['gameOld'] = $data;
-        header('Location: ' . APP_BASE . '/games');
+        header('Location: ' . APP_BASE . '/games/create');
         exit;
     }
 
@@ -53,7 +65,7 @@ function submitGame(PDO $pdo): void {
     if (!$gameId) {
         $_SESSION['gameErrors'] = ['general' => ['Nepodařilo se uložit hru.']];
         $_SESSION['gameOld'] = $data;
-        header('Location: ' . APP_BASE . '/games/add');
+        header('Location: ' . APP_BASE . '/games/create');
         exit;
     }
 

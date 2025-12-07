@@ -18,8 +18,7 @@ CREATE TABLE IF NOT EXISTS games (
      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
      status ENUM('active', 'pending', 'rejected') NOT NULL DEFAULT 'pending',
      author_id INT NOT NULL,
-     cover_full VARCHAR(255),
-     cover_thumb VARCHAR(255),
+     covers JSON DEFAULT NULL,
      developer VARCHAR(255),
      publisher VARCHAR(255),
      FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE

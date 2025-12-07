@@ -1,9 +1,23 @@
-<h1 class="form-title">Přihlaste se</h1>
+<h1 class="form-title">Přihlášení</h1>
 
 <form class="form-container" action="<?= APP_BASE ?>/login/submit" method="POST" autocomplete="off">
+    
+    <?= csrfField() ?>
+
+    <?php if (!empty($errors['csrf'])): ?>
+        <div class="form-error-general">
+            <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($errorStatus): ?>
+        <div class="form-error-general">
+            <small class="error"><?= htmlspecialchars($errorStatus) ?></small>
+        </div>
+    <?php endif; ?>
 
     <div class="form-row">
-        <label for="identifier">Username nebo email:</label>
+        <label for="identifier">Uživatelské jméno nebo email:</label>
         <input type="text" id="identifier" name="identifier"
                value="<?= htmlspecialchars($old['identifier'] ?? '') ?>"
                class="<?= !empty($errors['identifier']) ? 'error' : '' ?>"
@@ -23,10 +37,9 @@
         <?php endif; ?>
     </div>
 
+    <button type="submit">Přihlásit se</button>
 
-    <?php if ($errorStatus): ?>
-        <small class="error"><?= htmlspecialchars($errorStatus) ?></small>
-    <?php endif; ?>
-
-    <button type="submit">Login</button>
+    <p class="form-link">
+        Nemáte ještě účet? <a href="<?= APP_BASE ?>/register">Zaregistrujte se</a>
+    </p>
 </form>

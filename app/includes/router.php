@@ -15,6 +15,7 @@ $routes = [
     '' => 'HomeController@showHomePage',
     'home' => 'HomeController@showHomePage',
     'games' => 'GamesController@showGamesPage',
+    'games/create' => 'GamesController@showGamesCreatePage',
     'games/add' => 'GamesController@submitGame',
     'top' => 'TopController@showTopPage',
     'login' => 'AuthController@showLoginPage',

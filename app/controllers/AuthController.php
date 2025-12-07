@@ -11,7 +11,7 @@ function showRegisterPage(): void {
 
     unset($_SESSION['authErrors'], $_SESSION['authOld']);
 
-    $content = renderView('register', [
+    $content = renderView('auth/register', [
         'errors' => $errors,
         'old' => $old
     ]);
@@ -21,6 +21,12 @@ function showRegisterPage(): void {
 
 function registerUser(PDO $pdo): bool {
     requireGuest();
+
+    if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
+        $_SESSION['authErrors'] = ['csrf' => ['Neplatný bezpečnostní token.']];
+        header('Location: ' . APP_BASE . '/register');
+        exit;
+    }
 
     $username = $_POST['username'];
     $name = $_POST['name'];
@@ -60,11 +66,20 @@ function showLoginPage(): void {
 
     $errors = $_SESSION['authErrors'] ?? [];
     $old = $_SESSION['authOld'] ?? [];
-    $errorStatus = $_SESSION['errorStatus'] ?? null;
+    $errorStatusCode = $_SESSION['errorStatus'] ?? null;
 
     unset($_SESSION['authErrors'], $_SESSION['authOld'], $_SESSION['errorStatus']);
 
-    $content = renderView('login', [
+    $errorStatusMessages = [
+        'NotFound' => 'Uživatel s tímto jménem nebo e-mailem nebyl nalezen.',
+        'WrongPassword' => 'Zadané heslo není správné.',
+        'AccountLocked' => 'Váš účet byl zablokován. Kontaktujte administrátora.',
+        'AccountInactive' => 'Váš účet ještě nebyl aktivován.'
+    ];
+
+    $errorStatus = $errorStatusCode ? ($errorStatusMessages[$errorStatusCode] ?? 'Došlo k chybě při přihlašování.') : null;
+
+    $content = renderView('auth/login', [
         'errors' => $errors,
         'old' => $old,
         'errorStatus' => $errorStatus
@@ -75,6 +90,13 @@ function showLoginPage(): void {
 
 function loginUser(PDO $pdo): bool {
     requireGuest();
+
+    if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
+        $_SESSION['authErrors'] = ['csrf' => ['Neplatný bezpečnostní token.']];
+        $_SESSION['authOld'] = ['identifier' => $_POST['identifier'] ?? ''];
+        header('Location: ' . APP_BASE . '/login');
+        exit;
+    }
 
     $identifier = $_POST['identifier'];
     $password = $_POST['password'];

@@ -9,17 +9,37 @@ function getAllGames(PDO $pdo): array {
             g.title,
             g.description,
             g.release_year,
-            g.cover_full,
-            g.cover_thumb,
+            g.covers,
             g.developer,
             g.publisher,
-            COALESCE(AVG(r.rating), 0) AS average_rating
+            COALESCE(AVG(r.rating), 0) AS average_rating,
+            COUNT(DISTINCT r.id) AS review_count,
+            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres
         FROM games g
         LEFT JOIN reviews r ON g.id = r.game_id
-        GROUP BY g.id, g.title, g.description, g.release_year, g.cover_full, g.cover_thumb, g.developer, g.publisher
+        LEFT JOIN game_tags gt ON g.id = gt.game_id
+        LEFT JOIN tags t ON gt.tag_id = t.id
+        GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher
         ORDER BY average_rating DESC
     ");
-    return $stmt->fetchAll();
+    
+    $games = $stmt->fetchAll();
+    
+    foreach ($games as &$game) {
+        if ($game['covers']) {
+            $game['covers'] = json_decode($game['covers'], true);
+        } else {
+            $game['covers'] = [];
+        }
+        
+        if ($game['genres']) {
+            $game['genres'] = explode('|', $game['genres']);
+        } else {
+            $game['genres'] = [];
+        }
+    }
+    
+    return $games;
 }
 function saveGame(PDO $pdo, array $data, int $userId, array $file): ?int
 {
@@ -49,37 +69,41 @@ function saveGame(PDO $pdo, array $data, int $userId, array $file): ?int
         mkdir($uploadBase, 0777, true);
     }
 
-    $slug = makeFolderSlug($data['title']);
-    $dir = $uploadBase . '/' . $gameId . '_' . $slug;
+    $slug = date('Y-m-d') . '_' . $gameId;
+    $dir = $uploadBase . '/' . $slug;
 
     if (!is_dir($dir)) {
         mkdir($dir, 0777, true);
     }
 
     $full = $dir . '/cover_full.webp';
-    $thumb = $dir . '/cover_thumb.webp';
+    $thumb_vertical = $dir . '/cover_thumb_vertical.webp';
+    $thumb_horizontal = $dir . '/cover_thumb_horizontal.webp';
 
     imageResizeWebp($file['tmp_name'], 600, 900, $full);
-    imageResizeWebp($file['tmp_name'], 200, 300, $thumb);
+    imageResizeWebp($file['tmp_name'], 200, 300, $thumb_vertical);
+    imageResizeWebp($file['tmp_name'], 300, 170, $thumb_horizontal);
 
-    // 4) Uložit cesty
+    $fullUrl = str_replace(PUBLIC_DIR, 'public', $full);
+    $thumbVerticalUrl = str_replace(PUBLIC_DIR, 'public', $thumb_vertical);
+    $thumbHorizontalUrl = str_replace(PUBLIC_DIR, 'public', $thumb_horizontal);
+
+    $coversJson = json_encode([
+        'full' => $fullUrl,
+        'thumb_vertical' => $thumbVerticalUrl,
+        'thumb_horizontal' => $thumbHorizontalUrl
+    ], JSON_UNESCAPED_SLASHES);
+
     $stmt = $pdo->prepare("
         UPDATE games
-        SET cover_full = :full, cover_thumb = :thumb
+        SET covers = :covers
         WHERE id = :id
     ");
 
-    $fullUrl = str_replace(PUBLIC_DIR, 'public', $full);
-    $thumbUrl = str_replace(PUBLIC_DIR, 'public', $thumb);
-
-
     $stmt->execute([
-        'full' => $fullUrl,
-        'thumb' => $thumbUrl,
+        'covers' => $coversJson,
         'id' => $gameId
     ]);
-
-    // 5) Tags — žánry i platformy
     $insert = $pdo->prepare("
         INSERT INTO game_tags (game_id, tag_id) VALUES (:gid, :tid)
     ");

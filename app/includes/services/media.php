@@ -13,28 +13,30 @@ function imageResizeWebp(string $srcPath, int $newW, int $newH, string $destPath
     $origW = imagesx($src);
     $origH = imagesy($src);
 
-    $ratio = min($newW / $origW, $newH / $origH);
-    $targetW = (int)($origW * $ratio);
-    $targetH = (int)($origH * $ratio);
+    $ratio = max($newW / $origW, $newH / $origH);
+    $resizeW = (int)($origW * $ratio);
+    $resizeH = (int)($origH * $ratio);
 
-    $dst = imagecreatetruecolor($targetW, $targetH);
+    $tmp = imagecreatetruecolor($resizeW, $resizeH);
+    imagealphablending($tmp, false);
+    imagesavealpha($tmp, true);
 
+    imagecopyresampled($tmp, $src, 0, 0, 0, 0, $resizeW, $resizeH, $origW, $origH);
+
+    $dst = imagecreatetruecolor($newW, $newH);
     imagealphablending($dst, false);
     imagesavealpha($dst, true);
 
-    imagecopyresampled($dst, $src, 0, 0, 0, 0, $targetW, $targetH, $origW, $origH);
+    $cropX = (int)(($resizeW - $newW) / 2);
+    $cropY = (int)(($resizeH - $newH) / 2);
 
-    imagewebp($dst, $destPath, 80);
+    imagecopy($dst, $tmp, 0, 0, $cropX, $cropY, $newW, $newH);
+
+    imagewebp($dst, $destPath, 85);
 
     imagedestroy($src);
+    imagedestroy($tmp);
     imagedestroy($dst);
 
     return true;
-}
-
-function makeFolderSlug(string $text): string
-{
-    $text = strtolower($text);
-    $text = preg_replace('/[^a-z0-9]+/', '_', $text);
-    return trim($text, '_');
 }

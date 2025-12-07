@@ -6,6 +6,14 @@
           method="POST"
           enctype="multipart/form-data"
           autocomplete="off">
+        
+        <?= csrfField() ?>
+
+        <?php if (!empty($errors['csrf'])): ?>
+            <div class="form-error-general">
+                <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+            </div>
+        <?php endif; ?>
 
         <div class="form-row">
             <label for="title">Název hry:</label>
@@ -99,3 +107,4 @@
         <button type="submit">Odeslat ke schválení</button>
     </form>
 </section>
+

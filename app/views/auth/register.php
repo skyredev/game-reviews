@@ -1,6 +1,14 @@
 <h1 class="form-title">Registrace</h1>
 
 <form class="form-container" action="<?= APP_BASE ?>/register/submit" method="POST" autocomplete="off">
+    
+    <?= csrfField() ?>
+
+    <?php if (!empty($errors['csrf'])): ?>
+        <div class="form-error-general">
+            <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+        </div>
+    <?php endif; ?>
 
     <div class="form-row">
         <label for="name">Jméno:</label>
@@ -46,4 +54,9 @@
     </div>
 
     <button type="submit">Registrovat</button>
+
+    <p class="form-link">
+        Už máte účet? <a href="<?= APP_BASE ?>/login">Přihlaste se</a>
+    </p>
 </form>
+
