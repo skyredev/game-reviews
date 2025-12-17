@@ -1,6 +1,6 @@
 <h1 class="form-title">Registrace</h1>
 
-<form class="form-container" action="<?= APP_BASE ?>/register/submit" method="POST" autocomplete="off">
+<form class="form-container" action="<?= APP_BASE ?>/register/submit" method="POST" enctype="multipart/form-data" autocomplete="off">
     
     <?= csrfField() ?>
 
@@ -50,6 +50,25 @@
                required>
         <?php if (!empty($errors['password'])): ?>
             <small class="error"><?= htmlspecialchars($errors['password'][0]) ?></small>
+        <?php endif; ?>
+    </div>
+
+    <div class="form-row">
+        <label for="password_confirmation">Potvrzení hesla:</label>
+        <input type="password" id="password_confirmation" name="password_confirmation"
+               class="<?= !empty($errors['password_confirmation']) ? 'error' : '' ?>"
+               required>
+        <?php if (!empty($errors['password_confirmation'])): ?>
+            <small class="error"><?= htmlspecialchars($errors['password_confirmation'][0]) ?></small>
+        <?php endif; ?>
+    </div>
+
+    <div class="form-row">
+        <label for="avatar">Profilový obrázek (volitelné):</label>
+        <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif"
+               class="<?= !empty($errors['avatar']) ? 'error' : '' ?>">
+        <?php if (!empty($errors['avatar'])): ?>
+            <small class="error"><?= htmlspecialchars($errors['avatar'][0]) ?></small>
         <?php endif; ?>
     </div>
 

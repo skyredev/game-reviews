@@ -1,15 +1,16 @@
 <?php
 
+require_once __DIR__ . '/redirect.php';
+
 function requireGuest(): void {
     if (!empty($_SESSION['user'])) {
-        header('Location: ' . APP_BASE . '/');
-        exit;
+        redirect('/');
     }
 }
+
 function requireUser(): void {
     if (empty($_SESSION['user'])) {
-        header('Location: ' . APP_BASE . '/login');
-        exit;
+        redirect('/login');
     }
 }
 
@@ -17,8 +18,7 @@ function requireAdmin(): void {
     requireUser();
     if ($_SESSION['user']['role'] !== 'admin') {
         http_response_code(403);
-        header('Location: ' . APP_BASE . '/forbidden');
-        exit;
+        redirect('/forbidden');
     }
 }
 

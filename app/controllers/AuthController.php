@@ -1,15 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../models/AuthModel.php';
-require_once __DIR__ . '/../includes/services/validation.php';
 
 function showRegisterPage(): void {
-    requireGuest();
-
-    $errors = $_SESSION['authErrors'] ?? [];
-    $old = $_SESSION['authOld'] ?? [];
-
-    unset($_SESSION['authErrors'], $_SESSION['authOld']);
+    $errors = getFlash('auth_errors') ?? [];
+    $old = getFlash('auth_old') ?? [];
 
     $content = renderView('auth/register', [
         'errors' => $errors,
@@ -19,56 +14,39 @@ function showRegisterPage(): void {
     require __DIR__ . '/../views/layout.php';
 }
 
-function registerUser(PDO $pdo): bool {
-    requireGuest();
-
-    if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
-        $_SESSION['authErrors'] = ['csrf' => ['Neplatný bezpečnostní token.']];
-        header('Location: ' . APP_BASE . '/register');
-        exit;
-    }
-
-    $username = $_POST['username'];
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    $errors = validateRegister($username, $name, $email, $password);
-
-    if(!empty($errors)) {
-        $_SESSION['authOld'] = compact('username', 'name', 'email');
-        $_SESSION['authErrors'] = $errors;
-        header('Location: ' . APP_BASE . '/register');
-        exit;
-    }
-
-    [$dbErrors, $user] = createUser($pdo, $username, $email, $password);
+function registerUser(PDO $pdo): void {
+    [$dbErrors, $user] = createUser(
+        $pdo,
+        $_POST['username'],
+        $_POST['name'],
+        $_POST['email'],
+        $_POST['password'],
+        'user',
+        $_FILES['avatar'] ?? null
+    );
 
     if (!empty($dbErrors)) {
-        $_SESSION['authOld'] = compact('username', 'name', 'email');
-        $_SESSION['authErrors'] = $dbErrors;
-        header('Location: ' . APP_BASE . '/register');
-        exit;
+        redirectWithErrors('/register', $dbErrors, [
+            'username' => $_POST['username'],
+            'name' => $_POST['name'],
+            'email' => $_POST['email']
+        ], 'auth');
     }
 
+    // Login user
     $_SESSION['user'] = [
         'id' => $user['id'],
         'username' => $user['username'],
         'role' => $user['role']
     ];
 
-    header('Location: ' . APP_BASE . '/');
-    exit;
+    redirect('/');
 }
 
 function showLoginPage(): void {
-    requireGuest();
-
-    $errors = $_SESSION['authErrors'] ?? [];
-    $old = $_SESSION['authOld'] ?? [];
-    $errorStatusCode = $_SESSION['errorStatus'] ?? null;
-
-    unset($_SESSION['authErrors'], $_SESSION['authOld'], $_SESSION['errorStatus']);
+    $errors = getFlash('auth_errors') ?? [];
+    $old = getFlash('auth_old') ?? [];
+    $errorStatusCode = getFlash('auth_error_status');
 
     $errorStatusMessages = [
         'NotFound' => 'Uživatel s tímto jménem nebo e-mailem nebyl nalezen.',
@@ -88,55 +66,26 @@ function showLoginPage(): void {
     require __DIR__ . '/../views/layout.php';
 }
 
-function loginUser(PDO $pdo): bool {
-    requireGuest();
-
-    if (!isset($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
-        $_SESSION['authErrors'] = ['csrf' => ['Neplatný bezpečnostní token.']];
-        $_SESSION['authOld'] = ['identifier' => $_POST['identifier'] ?? ''];
-        header('Location: ' . APP_BASE . '/login');
-        exit;
-    }
-
-    $identifier = $_POST['identifier'];
-    $password = $_POST['password'];
-
-    $errors = validateLogin($identifier);
-
-    if(!empty($errors)) {
-        $_SESSION['authOld'] = compact('identifier');
-        $_SESSION['authErrors'] = $errors;
-        header('Location: ' . APP_BASE . '/login');
-        exit;
-    }
-
-    [$dbErrors, $user] = doLogin($pdo, $identifier, $password);
+function loginUser(PDO $pdo): void {
+    [$dbErrors, $user] = doLogin($pdo, $_POST['identifier'], $_POST['password']);
 
     if (!empty($dbErrors)) {
-        $_SESSION['authOld'] = compact('identifier');
-        $_SESSION['authErrors'] = $dbErrors;
-        $_SESSION['errorStatus'] = $user;
-        header('Location: ' . APP_BASE . '/login');
-        exit;
+        $_SESSION['auth_error_status'] = $user;
+        redirectWithErrors('/login', $dbErrors, ['identifier' => $_POST['identifier']], 'auth');
     }
 
+    // Login user
     $_SESSION['user'] = [
         'id' => $user['id'],
         'username' => $user['username'],
         'role' => $user['role']
     ];
 
-    header('Location: ' . APP_BASE . '/');
-    exit;
+    redirect('/');
 }
 
-function logoutUser(PDO $pdo): bool {
-    requireUser();
-
+function logoutUser(PDO $pdo): void {
     unset($_SESSION['user']);
-
     session_regenerate_id(true);
-
-    header('Location: ' . APP_BASE . '/');
-    exit;
+    redirect('/');
 }

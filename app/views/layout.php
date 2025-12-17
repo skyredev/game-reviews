@@ -19,9 +19,13 @@
     </header>
 
     <main>
-        <div class="container">
+        <?php if (!empty($fullWidth)): ?>
             <?= $content ?? ''; ?>
-        </div>
+        <?php else: ?>
+            <div class="container">
+                <?= $content ?? ''; ?>
+            </div>
+        <?php endif; ?>
     </main>
 
     <footer class="site-footer">

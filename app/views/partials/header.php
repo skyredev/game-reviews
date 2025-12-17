@@ -1,16 +1,10 @@
 <nav class="nav-container">
     <a href="<?= APP_BASE ?>/" class="logo">
-        <img
-            src="<?= APP_BASE ?>/public/assets/images/logo.svg"
-            alt="Game Reviews logo"
-            width="62" height="62"
-        >
+        <img src="<?= APP_BASE ?>/public/assets/icons/logo.svg" alt="Game Reviews logo" width="62" height="62">
     </a>
     
     <button class="mobile-menu-toggle" aria-label="Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <img id="menu-icon" src="<?= APP_BASE ?>/public/assets/icons/menu.svg" alt="Menu" width="24" height="24">
     </button>
     
     <div class="nav-menu">
