@@ -8,26 +8,21 @@ function showUserProfile(PDO $pdo): void {
 
     if (!$userId) {
         redirect('/not-found');
-        return;
     }
 
     $currentUser = currentUser();
-
     if (!$currentUser) {
         redirect('/login');
-        return;
-    } else if (($currentUser['id'] !== $userId && !isAdmin())) {
-        http_response_code(403);
-        redirect('/forbidden');
-        return;
     }
 
+    if ($currentUser['id'] !== $userId && !isAdmin()) {
+        http_response_code(403);
+        redirect('/forbidden');
+    }
 
     $user = getUserById($pdo, $userId);
-    
     if (!$user) {
         redirect('/not-found');
-        return;
     }
     
     // Get user statistics

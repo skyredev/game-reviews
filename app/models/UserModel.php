@@ -146,7 +146,7 @@ function getUserStatistics(PDO $pdo, int $userId): array {
     ");
     $stmt->execute(['user_id' => $userId]);
     $gamesByStatus = [];
-    while ($row = $stmt->fetch()) {
+    foreach ($stmt->fetchAll() as $row) {
         $gamesByStatus[$row['status']] = (int)$row['count'];
     }
     
@@ -199,15 +199,13 @@ function doToggleUserAdmin(PDO $pdo, int $userId): bool {
  * @return bool Success
  */
 function doToggleUserBlock(PDO $pdo, int $userId): bool {
-    // Get current block status
     $user = getUserById($pdo, $userId);
     if (!$user) {
         return false;
     }
     
-    $newBlockStatus = $user['is_blocked'] ? 0 : 1;
-    
-    return setUserBlockStatus($pdo, $userId, (bool)$newBlockStatus);
+    $newBlockStatus = !$user['is_blocked'];
+    return setUserBlockStatus($pdo, $userId, $newBlockStatus);
 }
 
 /**
@@ -236,9 +234,10 @@ function getAdminStatistics(PDO $pdo): array {
         GROUP BY status
     ");
     $gamesByStatus = [];
-    while ($row = $stmt->fetch()) {
+    foreach ($stmt->fetchAll() as $row) {
         $gamesByStatus[$row['status']] = (int)$row['count'];
     }
+    
     // Average rating (from reviews)
     $stmt = $pdo->query("
         SELECT AVG(rating) as avg_rating 

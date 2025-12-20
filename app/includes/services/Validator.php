@@ -21,9 +21,7 @@ class Validator {
                 if (is_string($rule)) {
                     $this->applyRule($field, $value, $file, $rule);
                 } elseif (is_array($rule)) {
-                    $ruleName = $rule[0];
-                    $ruleParams = array_slice($rule, 1);
-                    $this->applyRule($field, $value, $file, $ruleName, $ruleParams);
+                    $this->applyRule($field, $value, $file, $rule[0], array_slice($rule, 1));
                 }
             }
         }
@@ -193,20 +191,5 @@ class Validator {
         $this->errors[$field][] = $message;
     }
 
-    public function hasErrors(): bool {
-        return !empty($this->errors);
-    }
-
-    public function getErrors(): array {
-        return $this->errors;
-    }
-
-    public function getData(): array {
-        return $this->data;
-    }
-
-    public function getFiles(): array {
-        return $this->files;
-    }
 }
 

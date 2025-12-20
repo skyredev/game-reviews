@@ -29,7 +29,7 @@ function requireAdmin(): void {
 }
 
 function isLoggedIn(): bool {
-    return !empty($_SESSION['user']);
+    return isset($_SESSION['user']) && !empty($_SESSION['user']);
 }
 
 function isAdmin(): bool {
