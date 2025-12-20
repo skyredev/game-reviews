@@ -88,15 +88,15 @@ $routes = [
             new CsrfMiddleware('/register', 'auth'),
             new ValidationMiddleware([
                 'username' => [['required'], ['username'], ['min', 3], ['max', 50]],
-                'name' => [['required'], ['string'], ['min', 2], ['max', 100]],
                 'email' => [['required'], ['email'], ['email_part_min', 4]],
                 'password' => [['required'], ['password']],
                 'password_confirmation' => [['required'], ['confirmed']],
-                'avatar' => [['image'], ['image_max_size', 2097152]] // 2MB, optional
+                'avatar' => [['image'], ['image_max_size', 2097152]] // 2MB
             ], '/register', 'auth')
         ]
     ],
     'logout' => ['controller' => 'AuthController@logoutUser', 'middleware' => [new AuthMiddleware('user')]],
+    'user' => ['controller' => 'UserController@showUserProfile', 'middleware' => []],
     'forbidden' => ['controller' => 'UtilController@showForbiddenPage', 'middleware' => []],
     'not-found' => ['controller' => 'UtilController@showNotFoundPage', 'middleware' => []],
     'admin' => ['controller' => 'AdminController@showAdminPage', 'middleware' => [new AuthMiddleware('admin')]],
@@ -123,6 +123,20 @@ $routes = [
     ],
     'api/admin/game/reject' => [
         'controller' => 'AdminController@rejectGame',
+        'middleware' => [
+            new AuthMiddleware('admin'),
+            new CsrfMiddleware('/admin', 'admin')
+        ]
+    ],
+    'api/admin/user/toggle-admin' => [
+        'controller' => 'AdminController@toggleUserAdmin',
+        'middleware' => [
+            new AuthMiddleware('admin'),
+            new CsrfMiddleware('/admin', 'admin')
+        ]
+    ],
+    'api/admin/user/toggle-block' => [
+        'controller' => 'AdminController@toggleUserBlock',
         'middleware' => [
             new AuthMiddleware('admin'),
             new CsrfMiddleware('/admin', 'admin')

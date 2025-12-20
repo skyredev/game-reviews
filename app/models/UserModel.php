@@ -21,9 +21,9 @@ function getUsersPaginated(PDO $pdo, int $page = 1, int $perPage = 10): array {
     
     // Get users for current page
     $stmt = $pdo->prepare("
-        SELECT id, username, name, email, role, avatar_path, created_at
+        SELECT id, username, email, role, avatar_path, created_at, is_blocked
         FROM users
-        ORDER BY created_at DESC
+        ORDER BY username
         LIMIT :limit OFFSET :offset
     ");
     
@@ -38,6 +38,176 @@ function getUsersPaginated(PDO $pdo, int $page = 1, int $perPage = 10): array {
         'current_page' => $page,
         'per_page' => $perPage
     ];
+}
+
+/**
+ * Get user information by ID
+ *
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @return array|null User data or null if not found
+ */
+function getUserById(PDO $pdo, int $userId, bool $includePassHash = false): ?array {
+    $stmt = $pdo->prepare("
+        SELECT id, username, email, role, avatar_path, created_at, is_blocked" . ($includePassHash ? ", pass_hash" : "") . "
+        FROM users
+        WHERE id = :id
+    ");
+    $stmt->execute(['id' => $userId]);
+    $user = $stmt->fetch();
+    return $user ?: null;
+}
+
+/**
+ * Get user information by identifier (username or email)
+ *
+ * @param PDO $pdo Database connection
+ * @param string $identifier Username or email
+ * @return array|null User data or null if not found
+ */
+function getUserByIdentifier(PDO $pdo, string $identifier, bool $includePassHash = false): ?array {
+    $stmt = $pdo->prepare("
+        SELECT id, username, email, role, avatar_path, created_at, is_blocked" . ($includePassHash ? ", pass_hash" : "") . "
+        FROM users
+        WHERE username = :identifier OR email = :identifier
+    ");
+    $stmt->execute(['identifier' => $identifier]);
+    $user = $stmt->fetch();
+    return $user ?: null;
+}
+
+/**
+ * Block or unblock a user
+ *
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @param bool $block True to block, false to unblock
+ * @return bool True on success, false on failure
+ */
+function setUserBlockStatus(PDO $pdo, int $userId, bool $block): bool {
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET is_blocked = :is_blocked
+        WHERE id = :id
+    ");
+    return $stmt->execute([
+        'is_blocked' => $block ? 1 : 0,
+        'id' => $userId
+    ]);
+}
+
+/**
+ * Checks if identifier matches existing username or email
+ *
+ * @param PDO $pdo Database connection
+ * @param string $username Username to check
+ * @param string $email Email to check
+ * @return string|null Returns 'username' if username taken, 'email' if email taken, or null if not found
+ */
+function checkExistingUser(PDO $pdo, string $username, string $email): array {
+    $stmt = $pdo->prepare("
+        SELECT username, email 
+        FROM users 
+        WHERE username = :username OR email = :email
+        LIMIT 1
+    ");
+    $stmt->execute([
+        'username' => $username,
+        'email' => $email
+    ]);
+
+    $row = $stmt->fetch();
+
+    return [
+        'username' => $row && $row['username'] === $username,
+        'email'    => $row && $row['email'] === $email,
+    ];
+}
+
+/**
+ * Get user statistics
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @return array User statistics
+ */
+function getUserStatistics(PDO $pdo, int $userId): array {
+    // Total games by user
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM games WHERE author_id = :user_id");
+    $stmt->execute(['user_id' => $userId]);
+    $totalGames = (int)$stmt->fetch()['total'];
+    
+    // Games by status
+    $stmt = $pdo->prepare("
+        SELECT status, COUNT(*) as count 
+        FROM games 
+        WHERE author_id = :user_id
+        GROUP BY status
+    ");
+    $stmt->execute(['user_id' => $userId]);
+    $gamesByStatus = [];
+    while ($row = $stmt->fetch()) {
+        $gamesByStatus[$row['status']] = (int)$row['count'];
+    }
+    
+    // Total reviews by user
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM reviews WHERE user_id = :user_id");
+    $stmt->execute(['user_id' => $userId]);
+    $totalReviews = (int)$stmt->fetch()['total'];
+    
+    return [
+        'games' => [
+            'total' => $totalGames,
+            'active' => $gamesByStatus['active'] ?? 0,
+            'pending' => $gamesByStatus['pending'] ?? 0,
+            'rejected' => $gamesByStatus['rejected'] ?? 0
+        ],
+        'reviews' => [
+            'total' => $totalReviews
+        ]
+    ];
+}
+
+/**
+ * Toggle user admin status
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @return bool Success
+ */
+function doToggleUserAdmin(PDO $pdo, int $userId): bool {
+    // Get current role
+    $user = getUserById($pdo, $userId);
+    if (!$user) {
+        return false;
+    }
+    
+    $newRole = $user['role'] === 'admin' ? 'user' : 'admin';
+    
+    $stmt = $pdo->prepare("UPDATE users SET role = :role WHERE id = :id");
+    return $stmt->execute([
+        'role' => $newRole,
+        'id' => $userId
+    ]);
+}
+
+/**
+ * Toggle user block status
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @return bool Success
+ */
+function doToggleUserBlock(PDO $pdo, int $userId): bool {
+    // Get current block status
+    $user = getUserById($pdo, $userId);
+    if (!$user) {
+        return false;
+    }
+    
+    $newBlockStatus = $user['is_blocked'] ? 0 : 1;
+    
+    return setUserBlockStatus($pdo, $userId, (bool)$newBlockStatus);
 }
 
 /**

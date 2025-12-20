@@ -1,30 +1,41 @@
 <h1 class="form-title">Přihlášení</h1>
 
-<form class="form-container" action="<?= APP_BASE ?>/login/submit" method="POST" autocomplete="off">
+<form class="form-container" 
+      action="<?= APP_BASE ?>/login/submit" 
+      method="POST" 
+      autocomplete="off"
+      data-validation-rules='{"identifier":[["required"]],"password":[["required"]]}'>
     
     <?= csrfField() ?>
 
     <?php if (!empty($errors['csrf'])): ?>
         <div class="form-error-general">
-            <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+            <?php
+            $error = $errors['csrf'];
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
     <?php endif; ?>
 
     <?php if ($errorStatus): ?>
         <div class="form-error-general">
-            <small class="error"><?= htmlspecialchars($errorStatus) ?></small>
+            <?php
+            $error = [$errorStatus];
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
     <?php endif; ?>
 
     <div class="form-row">
-        <label for="identifier">Uživatelské jméno nebo email:</label>
+        <label for="identifier">Uživatelské jméno nebo email*:</label>
         <input type="text" id="identifier" name="identifier"
                value="<?= htmlspecialchars($old['identifier'] ?? '') ?>"
                class="<?= !empty($errors['identifier']) ? 'error' : '' ?>"
                required>
-        <?php if (!empty($errors['identifier'])): ?>
-            <small class="error"><?= htmlspecialchars($errors['identifier'][0]) ?></small>
-        <?php endif; ?>
+        <?php
+        $error = $errors['identifier'] ?? null;
+        require __DIR__ . '/../partials/errors-tooltip.php';
+        ?>
     </div>
 
     <div class="form-row">
@@ -32,9 +43,10 @@
         <input type="password" id="password" name="password"
                class="<?= !empty($errors['password']) ? 'error' : '' ?>"
                required>
-        <?php if (!empty($errors['password'])): ?>
-            <small class="error"><?= htmlspecialchars($errors['password'][0]) ?></small>
-        <?php endif; ?>
+        <?php
+        $error = $errors['password'] ?? null;
+        require __DIR__ . '/../partials/errors-tooltip.php';
+        ?>
     </div>
 
     <button type="submit">Přihlásit se</button>

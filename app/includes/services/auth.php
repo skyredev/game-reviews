@@ -12,6 +12,12 @@ function requireUser(): void {
     if (empty($_SESSION['user'])) {
         redirect('/login');
     }
+    
+    // Check if user is blocked
+    if (!empty($_SESSION['user']['is_blocked'])) {
+        unset($_SESSION['user']);
+        redirect('/login');
+    }
 }
 
 function requireAdmin(): void {
@@ -31,5 +37,13 @@ function isAdmin(): bool {
 }
 
 function currentUser(): ?array {
-    return $_SESSION['user'] ?? null;
+    $user = $_SESSION['user'] ?? null;
+    
+    // If user is blocked, clear session
+    if ($user && !empty($user['is_blocked'])) {
+        unset($_SESSION['user']);
+        return null;
+    }
+    
+    return $user;
 }

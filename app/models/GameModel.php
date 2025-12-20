@@ -37,7 +37,7 @@ function uploadGameCovers(array $coverFile, int $gameId): ?array {
     imageResizeWebp($coverFile['tmp_name'], 200, 300, $thumbVertical);
     imageResizeWebp($coverFile['tmp_name'], 300, 170, $thumbHorizontal);
 
-    // Return URLs relative to public directory
+    // Return paths with public/ prefix
     return [
         'full' => str_replace(PUBLIC_DIR, 'public', $full),
         'thumb_vertical' => str_replace(PUBLIC_DIR, 'public', $thumbVertical),
@@ -139,6 +139,13 @@ function processGamesData(array $games): array {
         } else {
             $game['genres'] = [];
         }
+        
+        // Use approved_at if exists, otherwise use created_at for display date
+        if (isset($game['approved_at']) && $game['approved_at']) {
+            $game['display_date'] = $game['approved_at'];
+        } else {
+            $game['display_date'] = $game['created_at'] ?? null;
+        }
     }
     
     return $games;
@@ -203,22 +210,24 @@ function getGamesPaginated(PDO $pdo, string $status = 'active', int $page = 1, i
             g.publisher,
             g.created_at,
             g.author_id,
+            g.status,
             u.username as author_username,
             COALESCE(AVG(r.rating), 0) AS average_rating,
             COUNT(DISTINCT r.id) AS review_count,
-            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres
+            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres,
+            (SELECT gm.created_at FROM game_moderations gm WHERE gm.game_id = g.id AND gm.type = 'approve' ORDER BY gm.created_at DESC LIMIT 1) as approved_at
         FROM games g
         LEFT JOIN users u ON g.author_id = u.id
         LEFT JOIN reviews r ON g.id = r.game_id
         LEFT JOIN game_tags gt ON g.id = gt.game_id
         LEFT JOIN tags t ON gt.tag_id = t.id
         WHERE g.status = :status
-        GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher, g.created_at, g.author_id, u.username
+        GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher, g.created_at, g.author_id, g.status, u.username
         {$orderBy}
         LIMIT :limit OFFSET :offset
     ");
     
-    $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+    $stmt->bindValue(':status', $status);
     $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
@@ -231,33 +240,6 @@ function getGamesPaginated(PDO $pdo, string $status = 'active', int $page = 1, i
         'per_page' => $perPage
     ];
 }
-
-function getAllGames(PDO $pdo): array {
-    $stmt = $pdo->query("
-        SELECT 
-            g.id,
-            g.title,
-            g.description,
-            g.release_year,
-            g.covers,
-            g.developer,
-            g.publisher,
-            g.created_at,
-            COALESCE(AVG(r.rating), 0) AS average_rating,
-            COUNT(DISTINCT r.id) AS review_count,
-            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres
-        FROM games g
-        LEFT JOIN reviews r ON g.id = r.game_id
-        LEFT JOIN game_tags gt ON g.id = gt.game_id
-        LEFT JOIN tags t ON gt.tag_id = t.id
-        WHERE g.status = 'active'
-        GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher, g.created_at
-        ORDER BY average_rating DESC
-    ");
-    
-    return processGamesData($stmt->fetchAll());
-}
-
 
 /**
  * Update game status
@@ -276,51 +258,149 @@ function updateGameStatus(PDO $pdo, int $gameId, string $status): bool {
 }
 
 /**
- * Save game rejection info
+ * Save game review (approve or reject)
  * 
  * @param PDO $pdo Database connection
  * @param int $gameId Game ID
- * @param int $rejectedBy User ID who rejected
- * @param string|null $reason Rejection reason
+ * @param int $reviewedBy User ID who reviewed
+ * @param string $type Review type ('approve' or 'reject')
+ * @param string|null $reason Rejection reason (only for reject)
  * @return bool Success
  */
-function saveGameRejection(PDO $pdo, int $gameId, int $rejectedBy, ?string $reason = null): bool {
-    // Delete existing rejection if any
-    $deleteStmt = $pdo->prepare("DELETE FROM game_rejects WHERE game_id = :game_id");
-    $deleteStmt->execute(['game_id' => $gameId]);
+function saveGameReview(PDO $pdo, int $gameId, int $reviewedBy, string $type, ?string $reason = null): bool {
+    // Delete existing review of this type if any
+    $deleteStmt = $pdo->prepare("DELETE FROM game_moderations WHERE game_id = :game_id AND type = :type");
+    $deleteStmt->execute(['game_id' => $gameId, 'type' => $type]);
     
-    // Insert new rejection
+    // Insert new review
     $stmt = $pdo->prepare("
-        INSERT INTO game_rejects (game_id, rejected_by, reason)
-        VALUES (:game_id, :rejected_by, :reason)
+        INSERT INTO game_moderations (game_id, reviewed_by, type, reason)
+        VALUES (:game_id, :reviewed_by, :type, :reason)
     ");
     return $stmt->execute([
         'game_id' => $gameId,
-        'rejected_by' => $rejectedBy,
+        'reviewed_by' => $reviewedBy,
+        'type' => $type,
         'reason' => $reason
     ]);
 }
 
 /**
- * Get game rejection info
+ * Get game moderation info (approve or reject)
  * 
  * @param PDO $pdo Database connection
  * @param int $gameId Game ID
- * @return array|null Rejection info with username or null
+ * @param string|null $type Review type ('approve' or 'reject'), null for any
+ * @return array|null Review info with username or null
  */
-function getGameRejection(PDO $pdo, int $gameId): ?array {
-    $stmt = $pdo->prepare("
-        SELECT gr.*, u.username as rejected_by_username
-        FROM game_rejects gr
-        JOIN users u ON gr.rejected_by = u.id
-        WHERE gr.game_id = :game_id
-        ORDER BY gr.created_at DESC
-        LIMIT 1
-    ");
-    $stmt->execute(['game_id' => $gameId]);
+function getGameModeration(PDO $pdo, int $gameId, ?string $type = null): ?array {
+    $sql = "
+        SELECT gm.*, u.username as reviewed_by_username
+        FROM game_moderations gm
+        JOIN users u ON gm.reviewed_by = u.id
+        WHERE gm.game_id = :game_id
+    ";
+    
+    $params = ['game_id' => $gameId];
+    
+    if ($type !== null) {
+        $sql .= " AND gm.type = :type";
+        $params['type'] = $type;
+    }
+    
+    $sql .= " ORDER BY gm.created_at DESC LIMIT 1";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $result = $stmt->fetch();
     return $result ?: null;
 }
+
+/**
+ * Get games by user with pagination
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @param int $page Current page (1-based)
+ * @param int $perPage Number of games per page
+ * @param string $sort Sort order
+ * @return array ['games' => array, 'total' => int, 'pages' => int, 'current_page' => int]
+ */
+function getGamesByUserPaginated(PDO $pdo, int $userId, int $page = 1, int $perPage = 12, string $sort = 'date_desc'): array {
+    $page = max(1, $page);
+    $perPage = max(1, min(50, $perPage));
+    $offset = ($page - 1) * $perPage;
+
+    // Validate and set sort order
+    $allowedSorts = [
+        'name_asc' => 'ORDER BY g.title ASC',
+        'name_desc' => 'ORDER BY g.title DESC',
+        'rating_asc' => 'ORDER BY average_rating ASC, g.created_at DESC',
+        'rating_desc' => 'ORDER BY average_rating DESC, g.created_at DESC',
+        'date_asc' => 'ORDER BY g.created_at ASC',
+        'date_desc' => 'ORDER BY g.created_at DESC',
+        'status_asc' => 'ORDER BY g.status ASC, g.created_at DESC',
+        'status_desc' => 'ORDER BY g.status DESC, g.created_at DESC'
+    ];
+    
+    if (!isset($allowedSorts[$sort])) {
+        $sort = 'date_desc'; // Default
+    }
+    
+    // Get total count
+    $countStmt = $pdo->prepare("
+        SELECT COUNT(*) as total
+        FROM games g
+        WHERE g.author_id = :user_id
+    ");
+    $countStmt->execute(['user_id' => $userId]);
+    $total = (int)$countStmt->fetch()['total'];
+    $totalPages = max(1, (int)ceil($total / $perPage));
+    
+    $orderBy = $allowedSorts[$sort];
+    
+    // Get games for current page
+    $stmt = $pdo->prepare("
+        SELECT 
+            g.id,
+            g.title,
+            g.description,
+            g.release_year,
+            g.covers,
+            g.developer,
+            g.publisher,
+            g.created_at,
+            g.author_id,
+            g.status,
+            COALESCE(AVG(r.rating), 0) AS average_rating,
+            COUNT(DISTINCT r.id) AS review_count,
+            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres,
+            (SELECT gm.created_at FROM game_moderations gm WHERE gm.game_id = g.id AND gm.type = 'approve' ORDER BY gm.created_at DESC LIMIT 1) as approved_at,
+            (SELECT gm.created_at FROM game_moderations gm WHERE gm.game_id = g.id AND gm.type = 'reject' ORDER BY gm.created_at DESC LIMIT 1) as rejected_at
+        FROM games g
+        LEFT JOIN reviews r ON g.id = r.game_id
+        LEFT JOIN game_tags gt ON g.id = gt.game_id
+        LEFT JOIN tags t ON gt.tag_id = t.id
+        WHERE g.author_id = :user_id
+        GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher, g.created_at, g.author_id, g.status
+        {$orderBy}
+        LIMIT :limit OFFSET :offset
+    ");
+    
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    return [
+        'games' => processGamesData($stmt->fetchAll()),
+        'total' => $total,
+        'pages' => $totalPages,
+        'current_page' => $page,
+        'per_page' => $perPage
+    ];
+}
+
 /**
  * Get game by ID with all details
  * Does not filter by status - access control should be done in controller

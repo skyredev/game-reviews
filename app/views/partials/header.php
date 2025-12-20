@@ -9,12 +9,19 @@
     
     <div class="nav-menu">
         <ul class="nav-list">
-            <li class="nav-item"><a href="<?=APP_BASE ?>/games">Hry</a></li>
+            <li class="nav-item"><a href="<?= APP_BASE ?><?= buildPaginationUrl('/games', 'games') ?>">Hry</a></li>
             <?php if (isLoggedIn()): ?>
                 <li class="nav-item"><a href="<?=APP_BASE ?>/games/create">Přidat hru</a></li>
             <?php endif; ?>
+            <?php if (isLoggedIn()): ?>
+                <?php
+                $userId = currentUser()['id'];
+                $profileKey = 'user_' . $userId;
+                ?>
+                <li class="nav-item"><a href="<?= APP_BASE ?><?= buildPaginationUrl('/user?id=' . $userId, $profileKey) ?>">Profil</a></li>
+            <?php endif; ?>
             <?php if (isAdmin()): ?>
-                <li class="nav-item"><a href="<?=APP_BASE ?>/admin">Admin</a></li>
+                <li class="nav-item"><a href="<?= APP_BASE ?><?= buildPaginationUrl('/admin', 'admin') ?>">Admin</a></li>
             <?php endif; ?>
             <?php if (isLoggedIn()): ?>
                 <li class="nav-item"><a href="<?= APP_BASE ?>/logout">Odhlásit (<?= htmlspecialchars(currentUser()['username']) ?>)</a></li>

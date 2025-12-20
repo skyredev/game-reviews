@@ -18,7 +18,6 @@ function registerUser(PDO $pdo): void {
     [$dbErrors, $user] = createUser(
         $pdo,
         $_POST['username'],
-        $_POST['name'],
         $_POST['email'],
         $_POST['password'],
         'user',
@@ -28,7 +27,6 @@ function registerUser(PDO $pdo): void {
     if (!empty($dbErrors)) {
         redirectWithErrors('/register', $dbErrors, [
             'username' => $_POST['username'],
-            'name' => $_POST['name'],
             'email' => $_POST['email']
         ], 'auth');
     }
@@ -52,7 +50,6 @@ function showLoginPage(): void {
         'NotFound' => 'Uživatel s tímto jménem nebo e-mailem nebyl nalezen.',
         'WrongPassword' => 'Zadané heslo není správné.',
         'AccountLocked' => 'Váš účet byl zablokován. Kontaktujte administrátora.',
-        'AccountInactive' => 'Váš účet ještě nebyl aktivován.'
     ];
 
     $errorStatus = $errorStatusCode ? ($errorStatusMessages[$errorStatusCode] ?? 'Došlo k chybě při přihlašování.') : null;
@@ -69,16 +66,25 @@ function showLoginPage(): void {
 function loginUser(PDO $pdo): void {
     [$dbErrors, $user] = doLogin($pdo, $_POST['identifier'], $_POST['password']);
 
-    if (!empty($dbErrors)) {
+    // If $user is a string, it's an error status code
+    if (is_string($user)) {
         $_SESSION['auth_error_status'] = $user;
         redirectWithErrors('/login', $dbErrors, ['identifier' => $_POST['identifier']], 'auth');
+        return;
+    }
+
+    // If there are errors and user is not an array, redirect
+    if (!empty($dbErrors) || !is_array($user)) {
+        redirectWithErrors('/login', $dbErrors, ['identifier' => $_POST['identifier']], 'auth');
+        return;
     }
 
     // Login user
     $_SESSION['user'] = [
         'id' => $user['id'],
         'username' => $user['username'],
-        'role' => $user['role']
+        'role' => $user['role'],
+        'is_blocked' => (bool)($user['is_blocked'] ?? false)
     ];
 
     redirect('/');

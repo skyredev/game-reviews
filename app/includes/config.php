@@ -67,5 +67,6 @@ require_once __DIR__ . '/services/helpers.php';
 require_once __DIR__ . '/services/auth.php';
 require_once __DIR__ . '/services/csrf.php';
 require_once __DIR__ . '/services/redirect.php';
+require_once __DIR__ . '/services/pagination.php';
 
 

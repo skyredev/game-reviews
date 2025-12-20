@@ -9,7 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= APP_BASE ?>/public/css/style.css">
-    <script defer src="<?= APP_BASE ?>/public/js/main.js"></script>
+    <script defer src="<?= APP_BASE ?>/public/js/carousel.js"></script>
+    <script defer src="<?= APP_BASE ?>/public/js/frontend.js"></script>
+    <script defer src="<?= APP_BASE ?>/public/js/ajax.js"></script>
+    <script defer src="<?= APP_BASE ?>/public/js/validation.js"></script>
 </head>
 <body>
     <header class="site-header">

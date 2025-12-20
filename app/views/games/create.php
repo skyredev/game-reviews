@@ -5,13 +5,17 @@
           action="<?= APP_BASE ?>/games/add"
           method="POST"
           enctype="multipart/form-data"
-          autocomplete="off">
+          autocomplete="off"
+          data-validation-rules='{"title":[["required"],["string"],["min",1],["max",255]],"description":[["required"],["string"],["min",10]],"publisher":[["required"],["string"],["min",1],["max",255]],"developer":[["required"],["string"],["min",1],["max",255]],"release_year":[["required"],["year",1980]],"genres":[["required"],["array_not_empty"]],"platforms":[["required"],["array_not_empty"]],"cover_image":[["required"],["image"],["image_max_size",5242880]]}'>
         
         <?= csrfField() ?>
 
         <?php if (!empty($errors['csrf'])): ?>
             <div class="form-error-general">
-                <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+                <?php
+                $error = $errors['csrf'];
+                require __DIR__ . '/../partials/errors-tooltip.php';
+                ?>
             </div>
         <?php endif; ?>
 
@@ -19,9 +23,10 @@
             <label for="title">Název hry:</label>
             <input type="text" name="title" id="title"
                    value="<?= htmlspecialchars($old['title'] ?? '') ?>" required>
-            <?php if (!empty($errors['title'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['title'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['title'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
@@ -37,9 +42,10 @@
                     </label>
                 <?php endforeach; ?>
             </div>
-            <?php if (!empty($errors['platforms'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['platforms'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['platforms'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
@@ -55,9 +61,10 @@
                     </label>
                 <?php endforeach; ?>
             </div>
-            <?php if (!empty($errors['genres'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['genres'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['genres'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
@@ -65,43 +72,48 @@
             <input type="number" id="year" name="release_year"
                    min="1980" max="<?= date('Y') ?>"
                    value="<?= htmlspecialchars($old['release_year'] ?? '') ?>" required>
-            <?php if (!empty($errors['release_year'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['release_year'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['release_year'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
             <label for="description">Krátký popis:</label>
             <textarea id="description" name="description" rows="5" required><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
-            <?php if (!empty($errors['description'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['description'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['description'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
             <label for="developer">Vývojář:</label>
             <input type="text" id="developer" name="developer"
                    value="<?= htmlspecialchars($old['developer'] ?? '') ?>" required>
-            <?php if (!empty($errors['developer'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['developer'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['developer'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
             <label for="publisher">Vydavatel:</label>
             <input type="text" id="publisher" name="publisher"
                    value="<?= htmlspecialchars($old['publisher'] ?? '') ?>" required>
-            <?php if (!empty($errors['publisher'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['publisher'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['publisher'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <div class="form-row">
             <label for="cover_image">Obrázek (obálka hry):</label>
             <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
-            <?php if (!empty($errors['cover_image'])): ?>
-                <small class="error"><?= htmlspecialchars($errors['cover_image'][0]) ?></small>
-            <?php endif; ?>
+            <?php
+            $error = $errors['cover_image'] ?? null;
+            require __DIR__ . '/../partials/errors-tooltip.php';
+            ?>
         </div>
 
         <button type="submit">Odeslat ke schválení</button>

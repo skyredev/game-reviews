@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/MiddlewareInterface.php';
 require_once __DIR__ . '/../services/Validator.php';
+require_once __DIR__ . '/../services/redirect.php';
 
 class ValidationMiddleware implements MiddlewareInterface {
     private array $rules;
@@ -26,7 +27,7 @@ class ValidationMiddleware implements MiddlewareInterface {
         if (!empty($errors)) {
             // Store errors and old input for PRG pattern
             $_SESSION[$this->sessionKey . '_errors'] = $errors;
-            $_SESSION[$this->sessionKey . '_old'] = $_POST;
+            $_SESSION[$this->sessionKey . '_old'] = excludeSensitiveFields($_POST);
             
             // Build redirect URL with query parameters
             $redirectUrl = $this->redirectUrl;

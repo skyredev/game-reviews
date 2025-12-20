@@ -8,6 +8,10 @@ $imageSrc = $covers['thumb_vertical'] ?? $covers['thumb_horizontal'] ?? $covers[
 $rating = $game['average_rating'];
 $reviewsCount = $game['review_count'];
 $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating >= 5 ? 'mid' : 'low'));
+
+// Use approved_at if exists, otherwise use created_at
+$displayDate = $game['display_date'] ?? $game['approved_at'] ?? $game['created_at'] ?? '';
+$formattedDate = $displayDate ? date('d.m.Y', strtotime($displayDate)) : '—';
 ?>
 
 <div class="game-card-small">
@@ -21,6 +25,10 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
             <h3 class="game-card-small-title" title="<?= htmlspecialchars($game['title']) ?>">
                 <?= htmlspecialchars($game['title']) ?>
             </h3>
+
+            <div class="game-card-small-date">
+                Přidáno: <?= htmlspecialchars($formattedDate) ?>
+            </div>
             
             <div class="game-card-small-footer">
                 <div class="game-card-small-score score-<?= $scoreClass ?>">

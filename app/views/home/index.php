@@ -59,7 +59,7 @@
 
     <!-- Call to Action Button -->
     <div class="cta-section">
-        <a href="<?= APP_BASE ?>/games" class="cta-button">
+        <a href="<?= APP_BASE ?><?= buildPaginationUrl('/games', 'games') ?>" class="cta-button">
             <span>Prohlédnout všechny hry</span>
         </a>
     </div>

@@ -98,7 +98,7 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                     <?php if ($rejectionInfo): ?>
                         <div class="rejection-details">
                             <div class="rejection-by">
-                                <?= htmlspecialchars($rejectionInfo['rejected_by_username']) ?>
+                                Zamítnul: <?= htmlspecialchars($rejectionInfo['reviewed_by_username']) ?>
                             </div>
                             <div class="rejection-date">
                                 <?= date('d.m.Y', strtotime($rejectionInfo['created_at'])) ?>
@@ -155,7 +155,10 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                     <?php $review = $userReview; require __DIR__ . '/../partials/review-item.php'; ?>
                 </div>
                 <div id="review-edit-form" class="hidden">
-                    <form method="POST" action="<?= APP_BASE ?>/game/review" class="review-form">
+                    <form method="POST" 
+                          action="<?= APP_BASE ?>/game/review" 
+                          class="review-form"
+                          data-validation-rules='{"rating":[["required"],["rating",1,10]],"comment":[["required"],["string"],["min",10]]}'>
                         <?= csrfField() ?>
                         <input type="hidden" name="game_id" value="<?= $game['id'] ?>">
                         
@@ -185,19 +188,28 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
             <!-- Review Form (if logged in but no review) -->
             <div class="review-form-block">
                 <h3>Napsat recenzi</h3>
-                <form method="POST" action="<?= APP_BASE ?>/game/review" class="review-form">
+                <form method="POST" 
+                      action="<?= APP_BASE ?>/game/review" 
+                      class="review-form"
+                      data-validation-rules='{"rating":[["required"],["rating",1,10]],"comment":[["required"],["string"],["min",10]]}'>
                     <?= csrfField() ?>
                     <input type="hidden" name="game_id" value="<?= $game['id'] ?>">
                     
                     <?php if (!empty($errors['general'])): ?>
                         <div class="form-error-general">
-                            <small class="error"><?= htmlspecialchars($errors['general'][0]) ?></small>
+                            <?php
+                            $error = $errors['general'];
+                            require __DIR__ . '/../partials/errors-tooltip.php';
+                            ?>
                         </div>
                     <?php endif; ?>
                     
                     <?php if (!empty($errors['csrf'])): ?>
                         <div class="form-error-general">
-                            <small class="error"><?= htmlspecialchars($errors['csrf'][0]) ?></small>
+                            <?php
+                            $error = $errors['csrf'];
+                            require __DIR__ . '/../partials/errors-tooltip.php';
+                            ?>
                         </div>
                     <?php endif; ?>
                     
@@ -209,17 +221,19 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                                 <label for="star<?= $i ?>" class="star-label"><?= $i ?></label>
                             <?php endfor; ?>
                         </div>
-                        <?php if (!empty($errors['rating'])): ?>
-                            <small class="error"><?= htmlspecialchars($errors['rating'][0]) ?></small>
-                        <?php endif; ?>
+                        <?php
+                        $error = $errors['rating'] ?? null;
+                        require __DIR__ . '/../partials/errors-tooltip.php';
+                        ?>
                     </div>
                     
                     <div class="form-row">
                         <label for="comment">Komentář:</label>
                         <textarea id="comment" name="comment" rows="5" required><?= htmlspecialchars($old['comment'] ?? '') ?></textarea>
-                        <?php if (!empty($errors['comment'])): ?>
-                            <small class="error"><?= htmlspecialchars($errors['comment'][0]) ?></small>
-                        <?php endif; ?>
+                        <?php
+                        $error = $errors['comment'] ?? null;
+                        require __DIR__ . '/../partials/errors-tooltip.php';
+                        ?>
                     </div>
                     
                     <button type="submit" class="btn">Uložit recenzi</button>

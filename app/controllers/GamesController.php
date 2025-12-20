@@ -5,6 +5,9 @@ require_once __DIR__ . '/../models/TagsModel.php';
 require_once __DIR__ . '/../models/ReviewModel.php';
 
 function showGamesPage(PDO $pdo): void {
+    // Update pagination state
+    updatePaginationState('games', ['page', 'sort']);
+    
     $page = max(1, (int)($_GET['page'] ?? 1));
     $perPage = 12;
     $sort = $_GET['sort'] ?? 'rating_desc';
@@ -58,8 +61,11 @@ function submitGame(PDO $pdo): void {
     if (!$gameId) {
         redirectWithErrors('/games/create', ['general' => ['Nepodařilo se uložit hru.']], $data, 'game');
     }
-
-    redirectWithSuccess('/games', 'Hra byla úspěšně přidána.');
+    
+    // Use buildPaginationUrl to preserve pagination state
+    require_once __DIR__ . '/../includes/services/pagination.php';
+    $redirectUrl = buildPaginationUrl('/games', 'games');
+    redirectWithSuccess($redirectUrl, 'Hra byla úspěšně přidána.');
 }
 
 function showGamePage(PDO $pdo): void {
@@ -116,11 +122,11 @@ function showGamePage(PDO $pdo): void {
     $errors = getFlash('review_errors') ?? [];
     $old = getFlash('review_old') ?? [];
     
-    // Get rejection info if game is rejected
+    // Get moderation info if game is rejected
     $rejectionInfo = null;
     if ($game['status'] === 'rejected') {
         require_once __DIR__ . '/../models/GameModel.php';
-        $rejectionInfo = getGameRejection($pdo, $gameId);
+        $rejectionInfo = getGameModeration($pdo, $gameId, 'reject');
     }
     
     $content = renderView('games/show', [

@@ -12,6 +12,20 @@ function redirect(string $url): void {
 }
 
 /**
+ * Exclude sensitive fields from input data
+ * 
+ * @param array $input Input data
+ * @return array Input data without sensitive fields
+ */
+function excludeSensitiveFields(array $input): array {
+    $excludedFields = ['password', 'password_confirmation', 'csrf_token', 'password_confirm'];
+    foreach ($excludedFields as $field) {
+        unset($input[$field]);
+    }
+    return $input;
+}
+
+/**
  * Post-Redirect-Get pattern with errors and old input
  * 
  * @param string $url URL to redirect to (without APP_BASE prefix)
@@ -21,7 +35,7 @@ function redirect(string $url): void {
  */
 function redirectWithErrors(string $url, array $errors, array $oldInput = [], string $sessionKey = 'form'): void {
     $_SESSION[$sessionKey . '_errors'] = $errors;
-    $_SESSION[$sessionKey . '_old'] = $oldInput;
+    $_SESSION[$sessionKey . '_old'] = excludeSensitiveFields($oldInput);
     redirect($url);
 }
 

@@ -10,7 +10,7 @@
 if ($totalPages > 1): ?>
     <nav class="pagination">
         <?php if ($currentPage > 1): ?>
-            <a href="<?= APP_BASE ?><?= $baseUrl ?><?= strpos($baseUrl, '?') !== false ? '&' : '?' ?><?= $pageParam ?>=<?= $currentPage - 1 ?>" class="pagination-link pagination-prev">
+            <a href="<?= APP_BASE ?><?= $baseUrl ?><?= str_contains($baseUrl, '?') ? '&' : '?' ?><?= $pageParam ?>=<?= $currentPage - 1 ?>" class="pagination-link pagination-prev">
                 <img src="<?= APP_BASE ?>/public/assets/icons/light-arrow-left.svg" alt="Arrow-Left" width="16" height="16">
                 <span>Předchozí</span>
             </a>
@@ -25,7 +25,7 @@ if ($totalPages > 1): ?>
             <?php
             $startPage = max(1, $currentPage - 2);
             $endPage = min($totalPages, $currentPage + 2);
-            $separator = strpos($baseUrl, '?') !== false ? '&' : '?';
+            $separator = str_contains($baseUrl, '?') ? '&' : '?';
             
             if ($startPage > 1): ?>
                 <a href="<?= APP_BASE ?><?= $baseUrl ?><?= $separator ?><?= $pageParam ?>=1" class="pagination-page">1</a>

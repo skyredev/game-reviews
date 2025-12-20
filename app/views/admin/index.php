@@ -1,4 +1,5 @@
 <section class="admin-page">
+    <?= csrfField() ?>
     <div class="page-header">
         <h1>Administrace</h1>
     </div>
@@ -50,21 +51,34 @@
             <div class="users-list">
                 <?php foreach ($users as $user): ?>
                     <div class="user-row">
-                        <a href="<?= APP_BASE ?>/user?id=<?= $user['id'] ?>" class="user-username">
+                        <a href="<?= APP_BASE ?><?= buildPaginationUrl('/user?id=' . $user['id'], 'user_' . $user['id']) ?>" class="user-username">
                             <?= htmlspecialchars($user['username']) ?>
                         </a>
-                        <span class="user-name"><?= htmlspecialchars($user['name'] ?? '—') ?></span>
                         <span class="user-email"><?= htmlspecialchars($user['email']) ?></span>
                         <span class="user-role"><?= $user['role'] === 'admin' ? 'Admin' : 'Uživatel' ?></span>
                         <span class="user-date"><?= date('d.m.Y', strtotime($user['created_at'])) ?></span>
+                        <?php if (isset($currentUserId) && $currentUserId != $user['id']): ?>
+                            <div class="user-actions">
+                                <button type="button" class="btn-icon admin-toggle-btn <?= $user['role'] === 'admin' ? 'admin-active' : '' ?>" 
+                                        data-user-id="<?= $user['id'] ?>" 
+                                        data-action="toggle-admin"
+                                        title="<?= $user['role'] === 'admin' ? 'Odebrat admina' : 'Udělit admina' ?>">
+                                    <img src="<?= APP_BASE ?>/public/assets/icons/admin.svg" alt="Admin" width="18" height="18">
+                                </button>
+                                <button type="button" class="btn-icon block-toggle-btn <?= $user['is_blocked'] ? 'blocked' : '' ?>" 
+                                        data-user-id="<?= $user['id'] ?>" 
+                                        data-action="toggle-block"
+                                        title="<?= $user['is_blocked'] ? 'Odblokovat' : 'Zablokovat' ?>">
+                                    <img src="<?= APP_BASE ?>/public/assets/icons/block.svg" alt="Block" width="18" height="18">
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </div>
             
             <?php
-            // Build URL with other params preserved
-            $gamesPage = $_GET['games_page'] ?? 1;
-            $baseUrl = '/admin' . ($gamesPage > 1 ? '?games_page=' . $gamesPage : '');
+            $baseUrl = buildPaginationUrl('/admin', 'admin');
             $pageParam = 'users_page';
             $currentPage = $usersCurrentPage;
             $totalPages = $usersPages;
@@ -86,9 +100,7 @@
             </div>
             
             <?php
-            // Build URL with other params preserved
-            $usersPage = $_GET['users_page'] ?? 1;
-            $baseUrl = '/admin' . ($usersPage > 1 ? '?users_page=' . $usersPage : '');
+            $baseUrl = buildPaginationUrl('/admin', 'admin');
             $pageParam = 'games_page';
             $currentPage = $gamesCurrentPage;
             $totalPages = $gamesPages;

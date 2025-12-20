@@ -27,8 +27,7 @@
         </div>
         
         <?php
-        $sortParam = isset($currentSort) && $currentSort !== 'rating_desc' ? 'sort=' . $currentSort : '';
-        $baseUrl = '/games' . ($sortParam ? '?' . $sortParam : '');
+        $baseUrl = buildPaginationUrl('/games', 'games', ['sort' => $currentSort]);
         $pageParam = 'page';
         require __DIR__ . '/../partials/pagination.php';
         ?>
