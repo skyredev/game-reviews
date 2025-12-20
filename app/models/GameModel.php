@@ -175,10 +175,10 @@ function getGamesPaginated(PDO $pdo, string $status = 'active', int $page = 1, i
     $allowedSorts = [
         'name_asc' => 'ORDER BY g.title ASC',
         'name_desc' => 'ORDER BY g.title DESC',
-        'rating_asc' => 'ORDER BY average_rating ASC, g.created_at DESC',
-        'rating_desc' => 'ORDER BY average_rating DESC, g.created_at DESC',
-        'date_asc' => 'ORDER BY g.created_at ASC',
-        'date_desc' => 'ORDER BY g.created_at DESC'
+        'rating_asc' => 'ORDER BY average_rating ASC, COALESCE(approved_at, g.created_at) DESC',
+        'rating_desc' => 'ORDER BY average_rating DESC, COALESCE(approved_at, g.created_at) DESC',
+        'date_asc' => 'ORDER BY COALESCE(approved_at, g.created_at) ASC',
+        'date_desc' => 'ORDER BY COALESCE(approved_at, g.created_at) DESC'
     ];
     
     if (!isset($allowedSorts[$sort])) {
@@ -335,12 +335,12 @@ function getGamesByUserPaginated(PDO $pdo, int $userId, int $page = 1, int $perP
     $allowedSorts = [
         'name_asc' => 'ORDER BY g.title ASC',
         'name_desc' => 'ORDER BY g.title DESC',
-        'rating_asc' => 'ORDER BY average_rating ASC, g.created_at DESC',
-        'rating_desc' => 'ORDER BY average_rating DESC, g.created_at DESC',
-        'date_asc' => 'ORDER BY g.created_at ASC',
-        'date_desc' => 'ORDER BY g.created_at DESC',
-        'status_asc' => 'ORDER BY g.status ASC, g.created_at DESC',
-        'status_desc' => 'ORDER BY g.status DESC, g.created_at DESC'
+        'rating_asc' => 'ORDER BY average_rating ASC, COALESCE(approved_at, g.created_at) DESC',
+        'rating_desc' => 'ORDER BY average_rating DESC, COALESCE(approved_at, g.created_at) DESC',
+        'date_asc' => 'ORDER BY COALESCE(approved_at, g.created_at) ASC',
+        'date_desc' => 'ORDER BY COALESCE(approved_at, g.created_at) DESC',
+        'status_asc' => 'ORDER BY g.status ASC, COALESCE(approved_at, g.created_at) DESC',
+        'status_desc' => 'ORDER BY g.status DESC, COALESCE(approved_at, g.created_at) DESC'
     ];
     
     if (!isset($allowedSorts[$sort])) {

@@ -20,7 +20,7 @@
         <?php endif; ?>
 
         <div class="form-row">
-            <label for="title">Název hry:</label>
+            <label for="title">Název hry*:</label>
             <input type="text" name="title" id="title"
                    value="<?= htmlspecialchars($old['title'] ?? '') ?>" required>
             <?php

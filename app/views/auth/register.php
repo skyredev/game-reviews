@@ -19,7 +19,7 @@
     <?php endif; ?>
 
     <div class="form-row">
-        <label for="username">Uživatelské jméno:</label>
+        <label for="username">Uživatelské jméno*:</label>
         <input type="text" id="username" name="username"
                value="<?= htmlspecialchars($old['username'] ?? '') ?>"
                class="<?= !empty($errors['username']) ? 'error' : '' ?>"
@@ -31,7 +31,7 @@
     </div>
 
     <div class="form-row">
-        <label for="email">Email:</label>
+        <label for="email">Email*:</label>
         <input type="email" id="email" name="email"
                value="<?= htmlspecialchars($old['email'] ?? '') ?>"
                class="<?= !empty($errors['email']) ? 'error' : '' ?>"
@@ -43,7 +43,7 @@
     </div>
 
     <div class="form-row">
-        <label for="password">Heslo:</label>
+        <label for="password">Heslo*:</label>
         <input type="password" id="password" name="password"
                class="<?= !empty($errors['password']) ? 'error' : '' ?>"
                required>
@@ -54,7 +54,7 @@
     </div>
 
     <div class="form-row">
-        <label for="password_confirmation">Potvrzení hesla:</label>
+        <label for="password_confirmation">Potvrzení hesla*:</label>
         <input type="password" id="password_confirmation" name="password_confirmation"
                class="<?= !empty($errors['password_confirmation']) ? 'error' : '' ?>"
                required>

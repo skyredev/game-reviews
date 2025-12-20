@@ -39,7 +39,7 @@
     </div>
 
     <div class="form-row">
-        <label for="password">Heslo:</label>
+        <label for="password">Heslo*:</label>
         <input type="password" id="password" name="password"
                class="<?= !empty($errors['password']) ? 'error' : '' ?>"
                required>

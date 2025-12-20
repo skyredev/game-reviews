@@ -42,8 +42,10 @@ class ClientValidator {
         }
         
         // Convert single-item arrays back to values (for radio buttons)
+        // But keep arrays for fields that should be arrays (like genres[], platforms[])
+        const arrayFields = ['genres', 'platforms'];
         for (const key in data) {
-            if (Array.isArray(data[key]) && data[key].length === 1) {
+            if (Array.isArray(data[key]) && data[key].length === 1 && !arrayFields.includes(key)) {
                 data[key] = data[key][0];
             }
         }
@@ -239,9 +241,22 @@ class ClientValidator {
 
         // Display new errors
         for (const [field, messages] of Object.entries(this.errors)) {
-            const input = this.form.querySelector(`[name="${field}"]`);
+            // Try to find input field - handle arrays with []
+            let input = this.form.querySelector(`[name="${field}"]`);
+            if (!input) {
+                // Try with [] suffix for array fields
+                input = this.form.querySelector(`[name="${field}[]"]`);
+            }
+            
             if (input) {
-                input.classList.add('error');
+                // For checkboxes/arrays, add error class to all inputs with this name
+                if (input.type === 'checkbox') {
+                    this.form.querySelectorAll(`[name="${field}[]"]`).forEach(cb => {
+                        cb.classList.add('error');
+                    });
+                } else {
+                    input.classList.add('error');
+                }
                 
                 // Find form-row container
                 const formRow = input.closest('.form-row');
@@ -259,7 +274,7 @@ class ClientValidator {
     }
 
     clearVisualErrors() {
-        // Remove error class from all inputs
+        // Remove error class from all inputs (including checkboxes)
         this.form.querySelectorAll('input.error, textarea.error, select.error').forEach(el => {
             el.classList.remove('error');
         });
