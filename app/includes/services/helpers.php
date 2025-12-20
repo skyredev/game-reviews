@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Render a view file with data
+ * 
+ * @param string $view View name (without .php extension, relative to app/views/)
+ * @param array $data Data to pass to view
+ * @return string Rendered HTML content
+ */
 function renderView(string $view, array $data = []): string {
     extract($data);
     ob_start();
@@ -7,10 +14,23 @@ function renderView(string $view, array $data = []): string {
     return ob_get_clean();
 }
 
+/**
+ * Escape HTML special characters
+ * 
+ * @param string $string String to escape
+ * @return string Escaped string
+ */
 function esc(string $string): string {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
+/**
+ * Get human-readable rating text based on numeric rating
+ * 
+ * @param float $rating Average rating (0-10)
+ * @param int $reviewsCount Number of reviews
+ * @return string Rating text (e.g., "Velmi pozitivní", "Pozitivní")
+ */
 function getRatingText(float $rating, int $reviewsCount): string {
     if ($reviewsCount === 0) {
         return 'Žádné hodnocení';
@@ -33,6 +53,15 @@ function getRatingText(float $rating, int $reviewsCount): string {
     return 'Velmi negativní';
 }
 
+/**
+ * Resize and convert image to WebP format
+ * 
+ * @param string $srcPath Source image path
+ * @param int $newW Target width
+ * @param int $newH Target height
+ * @param string $destPath Destination path for WebP file
+ * @return bool True on success, false on failure
+ */
 function imageResizeWebp(string $srcPath, int $newW, int $newH, string $destPath): bool
 {
     $mime = mime_content_type($srcPath);

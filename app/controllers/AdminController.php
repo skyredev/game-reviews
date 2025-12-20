@@ -1,8 +1,20 @@
 <?php
 
+/**
+ * Admin controller - handles admin panel and moderation actions
+ * 
+ * @package App\Controllers
+ */
+
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../models/GameModel.php';
 
+/**
+ * Show admin panel page with statistics and moderation lists
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function showAdminPage(PDO $pdo): void {
     // Update pagination state (both users_page and games_page)
     updatePaginationState('admin', ['users_page', 'games_page']);
@@ -36,6 +48,13 @@ function showAdminPage(PDO $pdo): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Approve game via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function approveGame(PDO $pdo): void {
     header('Content-Type: application/json');
     
@@ -61,6 +80,13 @@ function approveGame(PDO $pdo): void {
     exit;
 }
 
+/**
+ * Reject game via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function rejectGame(PDO $pdo): void {
     header('Content-Type: application/json');
     
@@ -87,6 +113,13 @@ function rejectGame(PDO $pdo): void {
     exit;
 }
 
+/**
+ * Toggle user admin status via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function toggleUserAdmin(PDO $pdo): void {
     header('Content-Type: application/json');
     
@@ -115,6 +148,13 @@ function toggleUserAdmin(PDO $pdo): void {
     exit;
 }
 
+/**
+ * Toggle user block status via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function toggleUserBlock(PDO $pdo): void {
     header('Content-Type: application/json');
     

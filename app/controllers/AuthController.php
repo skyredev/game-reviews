@@ -1,7 +1,18 @@
 <?php
 
+/**
+ * Authentication controller - handles login, registration, logout
+ * 
+ * @package App\Controllers
+ */
+
 require_once __DIR__ . '/../models/AuthModel.php';
 
+/**
+ * Show registration form page
+ * 
+ * @return void
+ */
 function showRegisterPage(): void {
     $errors = getFlash('auth_errors') ?? [];
     $old = getFlash('auth_old') ?? [];
@@ -14,6 +25,12 @@ function showRegisterPage(): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Handle user registration
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function registerUser(PDO $pdo): void {
     [$dbErrors, $user] = createUser(
         $pdo,
@@ -41,6 +58,11 @@ function registerUser(PDO $pdo): void {
     redirect('/');
 }
 
+/**
+ * Show login form page
+ * 
+ * @return void
+ */
 function showLoginPage(): void {
     $errors = getFlash('auth_errors') ?? [];
     $old = getFlash('auth_old') ?? [];
@@ -63,6 +85,12 @@ function showLoginPage(): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Handle user login
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function loginUser(PDO $pdo): void {
     [$dbErrors, $user] = doLogin($pdo, $_POST['identifier'], $_POST['password']);
 
@@ -90,6 +118,12 @@ function loginUser(PDO $pdo): void {
     redirect('/');
 }
 
+/**
+ * Handle user logout
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function logoutUser(PDO $pdo): void {
     unset($_SESSION['user']);
     session_regenerate_id(true);

@@ -4,7 +4,12 @@
  * @brief Global configuration file with .env loader
  */
 
-// --- ENV loader (simple) ---
+/**
+ * Load environment variables from .env file
+ * 
+ * @param string $filePath Path to .env file
+ * @return void
+ */
 function loadEnv($filePath): void
 {
     if (!file_exists($filePath)) {

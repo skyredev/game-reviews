@@ -1,15 +1,32 @@
 <?php
 
+/**
+ * Validation class for form data and files
+ * 
+ * @package App\Includes\Services
+ */
 class Validator {
     private array $errors = [];
     private array $data = [];
     private array $files = [];
 
+    /**
+     * Constructor
+     * 
+     * @param array $data Form data to validate
+     * @param array $files Uploaded files to validate
+     */
     public function __construct(array $data = [], array $files = []) {
         $this->data = $data;
         $this->files = $files;
     }
 
+    /**
+     * Validate data against rules
+     * 
+     * @param array $rules Validation rules in format ['field' => [['rule'], ['rule', param1, param2]]]
+     * @return array Validation errors in format ['field' => ['error1', 'error2']]
+     */
     public function validate(array $rules): array {
         $this->errors = [];
 
@@ -29,6 +46,16 @@ class Validator {
         return $this->errors;
     }
 
+    /**
+     * Apply a single validation rule to a field
+     * 
+     * @param string $field Field name
+     * @param mixed $value Field value
+     * @param array|null $file Uploaded file data or null
+     * @param string $rule Rule name
+     * @param array $params Rule parameters
+     * @return void
+     */
     private function applyRule(string $field, $value, $file, string $rule, array $params = []): void {
         switch ($rule) {
             case 'required':
@@ -184,6 +211,13 @@ class Validator {
         }
     }
 
+    /**
+     * Add an error message to a field
+     * 
+     * @param string $field Field name
+     * @param string $message Error message
+     * @return void
+     */
     private function addError(string $field, string $message): void {
         if (!isset($this->errors[$field])) {
             $this->errors[$field] = [];

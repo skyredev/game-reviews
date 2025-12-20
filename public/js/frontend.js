@@ -1,5 +1,7 @@
 /**
  * Frontend UI interactions (menus, forms, modals)
+ * 
+ * @file frontend.js
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
@@ -14,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const menuSvg = basePath + '/menu.svg';
         const closeSvg = basePath + '/close.svg';
         
+        /**
+         * Update mobile menu icon based on menu state
+         * 
+         * @returns {void}
+         */
         function updateMenuIcon() {
             if (!menuIcon) return;
             const isActive = menuToggle.classList.contains('active');

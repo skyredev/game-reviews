@@ -2,6 +2,11 @@
 
 /**
  * Get reviews for a game
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $gameId Game ID
+ * @param int|null $currentUserId Current user ID for reaction data (optional)
+ * @return array Array of review data with reactions
  */
 function getGameReviews(PDO $pdo, int $gameId, ?int $currentUserId = null): array {
     if ($currentUserId) {
@@ -72,6 +77,11 @@ function getGameReviews(PDO $pdo, int $gameId, ?int $currentUserId = null): arra
 
 /**
  * Get user's review for a game
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $gameId Game ID
+ * @param int $userId User ID
+ * @return array|null Review data or null if not found
  */
 function getUserReview(PDO $pdo, int $gameId, int $userId): ?array {
     $stmt = $pdo->prepare("
@@ -86,7 +96,14 @@ function getUserReview(PDO $pdo, int $gameId, int $userId): ?array {
 }
 
 /**
- * Create a review
+ * Create a new review
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $gameId Game ID
+ * @param int $userId User ID
+ * @param int $rating Rating (1-10)
+ * @param string $comment Review comment
+ * @return int|null Review ID on success, null if review already exists
  */
 function createReview(PDO $pdo, int $gameId, int $userId, int $rating, string $comment): ?int {
     // Check if review already exists
@@ -111,7 +128,14 @@ function createReview(PDO $pdo, int $gameId, int $userId, int $rating, string $c
 }
 
 /**
- * Update a review
+ * Update an existing review
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $reviewId Review ID
+ * @param int $userId User ID (for authorization)
+ * @param int $rating Rating (1-10)
+ * @param string $comment Review comment
+ * @return bool Success
  */
 function updateReview(PDO $pdo, int $reviewId, int $userId, int $rating, string $comment): bool {
     $stmt = $pdo->prepare("
@@ -132,6 +156,12 @@ function updateReview(PDO $pdo, int $reviewId, int $userId, int $rating, string 
 
 /**
  * Delete a review
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $reviewId Review ID
+ * @param int $userId User ID (for authorization if not admin)
+ * @param bool $isAdmin Whether user is admin (can delete any review)
+ * @return bool Success
  */
 function doDeleteReview(PDO $pdo, int $reviewId, int $userId, bool $isAdmin = false): bool {
     if ($isAdmin) {
@@ -191,6 +221,13 @@ function toggleReviewReaction(PDO $pdo, int $reviewId, int $userId, string $reac
 
 /**
  * Get reaction counts for a review
+ */
+/**
+ * Get reaction counts for a review
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $reviewId Review ID
+ * @return array Array with 'likes' and 'dislikes' counts
  */
 function getReviewReactionCounts(PDO $pdo, int $reviewId): array {
     $stmt = $pdo->prepare("

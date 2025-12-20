@@ -126,6 +126,12 @@ function getRecentGames(PDO $pdo, int $limit = 10): array {
  * @param array $games Raw games data from database
  * @return array Processed games data
  */
+/**
+ * Process games data from database - parse JSON fields and format data
+ * 
+ * @param array $games Raw games data from database
+ * @return array Processed games data
+ */
 function processGamesData(array $games): array {
     foreach ($games as &$game) {
         if ($game['covers']) {
@@ -404,6 +410,10 @@ function getGamesByUserPaginated(PDO $pdo, int $userId, int $page = 1, int $perP
 /**
  * Get game by ID with all details
  * Does not filter by status - access control should be done in controller
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $gameId Game ID
+ * @return array|null Game data or null if not found
  */
 function getGameById(PDO $pdo, int $gameId): ?array {
     $stmt = $pdo->prepare("
@@ -462,6 +472,15 @@ function getGameById(PDO $pdo, int $gameId): ?array {
     return $game;
 }
 
+/**
+ * Save game to database
+ * 
+ * @param PDO $pdo Database connection
+ * @param array $data Game data (title, description, release_year, publisher, developer, genres, platforms)
+ * @param int $userId Author user ID
+ * @param array|null $coverFile Uploaded cover image file from $_FILES
+ * @return int|null Game ID on success, null on failure
+ */
 function saveGame(PDO $pdo, array $data, int $userId, ?array $coverFile = null): ?int
 {
     $status = isAdmin() ? 'active' : 'pending';

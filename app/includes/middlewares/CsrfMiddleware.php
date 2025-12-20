@@ -1,17 +1,38 @@
 <?php
 
+/**
+ * CSRF protection middleware
+ * 
+ * @package App\Includes\Middlewares
+ */
+
 require_once __DIR__ . '/MiddlewareInterface.php';
 require_once __DIR__ . '/../services/csrf.php';
 
+/**
+ * Middleware for CSRF token validation
+ */
 class CsrfMiddleware implements MiddlewareInterface {
     private string $redirectUrl;
     private string $sessionKey;
 
+    /**
+     * Constructor
+     * 
+     * @param string $redirectUrl URL to redirect to on CSRF failure
+     * @param string $sessionKey Session key prefix for errors
+     */
     public function __construct(string $redirectUrl, string $sessionKey = 'validation') {
         $this->redirectUrl = $redirectUrl;
         $this->sessionKey = $sessionKey;
     }
 
+    /**
+     * Handle the request - validate CSRF token
+     * 
+     * @param callable $next Next middleware or controller
+     * @return void
+     */
     public function handle(callable $next): void {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $next();

@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * Games controller - handles game-related pages and actions
+ * 
+ * @package App\Controllers
+ */
+
 require_once __DIR__ . '/../models/GameModel.php';
 require_once __DIR__ . '/../models/TagsModel.php';
 require_once __DIR__ . '/../models/ReviewModel.php';
 
+/**
+ * Show games list page with pagination and sorting
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function showGamesPage(PDO $pdo): void {
     // Update pagination state
     updatePaginationState('games', ['page', 'sort']);
@@ -25,6 +37,12 @@ function showGamesPage(PDO $pdo): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Show game creation form page
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function showGamesCreatePage(PDO $pdo): void {
     $errors = getFlash('game_errors') ?? [];
     $old = getFlash('game_old') ?? [];
@@ -43,6 +61,12 @@ function showGamesCreatePage(PDO $pdo): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Handle game submission (create new game)
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function submitGame(PDO $pdo): void {
     $user = $_SESSION['user'];
 
@@ -68,6 +92,12 @@ function submitGame(PDO $pdo): void {
     redirectWithSuccess($redirectUrl, 'Hra byla úspěšně přidána.');
 }
 
+/**
+ * Show single game page with reviews
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function showGamePage(PDO $pdo): void {
     $gameId = (int)($_GET['id'] ?? 0);
     
@@ -142,6 +172,12 @@ function showGamePage(PDO $pdo): void {
     require __DIR__ . '/../views/layout.php';
 }
 
+/**
+ * Handle review submission (create or update review)
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function submitReview(PDO $pdo): void {
     $gameId = (int)($_POST['game_id'] ?? 0);
     $userId = $_SESSION['user']['id'];
@@ -172,6 +208,13 @@ function submitReview(PDO $pdo): void {
     redirect('/game?id=' . $gameId);
 }
 
+/**
+ * Delete review via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function deleteReview(PDO $pdo): void {
     header('Content-Type: application/json');
     
@@ -195,6 +238,13 @@ function deleteReview(PDO $pdo): void {
     exit;
 }
 
+/**
+ * Toggle review reaction (like/dislike) via AJAX
+ * Returns JSON response
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function toggleReaction(PDO $pdo): void {
     header('Content-Type: application/json');
     

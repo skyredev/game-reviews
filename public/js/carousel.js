@@ -1,5 +1,7 @@
 /**
- * Carousel functionality
+ * Carousel functionality for games carousels
+ * 
+ * @file carousel.js
  */
 document.addEventListener('DOMContentLoaded', function() {
     const carousels = document.querySelectorAll('.games-carousel');
@@ -25,6 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 carousel.scrollBy({ left: cardWidth * 2, behavior: 'smooth' });
             });
             
+            /**
+             * Update carousel navigation buttons state
+             * 
+             * @returns {void}
+             */
             function updateButtons() {
                 requestAnimationFrame(() => {
                     const scrollWidth = carousel.scrollWidth;

@@ -31,6 +31,17 @@ function uploadAvatar(?array $avatarFile): ?string {
     return str_replace(PUBLIC_DIR, 'public', $targetPath);
 }
 
+/**
+ * Create a new user account
+ * 
+ * @param PDO $pdo Database connection
+ * @param string $username Username
+ * @param string $email Email address
+ * @param string $password Plain text password (will be hashed)
+ * @param string $role User role (default: 'user')
+ * @param array|null $avatarFile Uploaded avatar file from $_FILES
+ * @return array Array with [errors, user] - errors is empty array on success, user is null on error
+ */
 function createUser(PDO $pdo, string $username, string $email, string $password, string $role = 'user', ?array $avatarFile = null): array {
     $errors = [];
 
@@ -77,6 +88,14 @@ function createUser(PDO $pdo, string $username, string $email, string $password,
     return [[], $user];
 }
 
+/**
+ * Authenticate user login
+ * 
+ * @param PDO $pdo Database connection
+ * @param string $identifier Username or email
+ * @param string $password Plain text password
+ * @return array Array with [errors, user] - errors is empty array on success, user can be array or error status string ('NotFound', 'AccountLocked', 'WrongPassword')
+ */
 function doLogin($pdo, $identifier, $password): array {
     $errors = [];
 

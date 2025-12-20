@@ -60,9 +60,10 @@ function getUserById(PDO $pdo, int $userId, bool $includePassHash = false): ?arr
 
 /**
  * Get user information by identifier (username or email)
- *
+ * 
  * @param PDO $pdo Database connection
  * @param string $identifier Username or email
+ * @param bool $includePassHash Whether to include password hash in result
  * @return array|null User data or null if not found
  */
 function getUserByIdentifier(PDO $pdo, string $identifier, bool $includePassHash = false): ?array {
@@ -103,6 +104,14 @@ function setUserBlockStatus(PDO $pdo, int $userId, bool $block): bool {
  * @param string $username Username to check
  * @param string $email Email to check
  * @return string|null Returns 'username' if username taken, 'email' if email taken, or null if not found
+ */
+/**
+ * Check if username or email already exists
+ * 
+ * @param PDO $pdo Database connection
+ * @param string $username Username to check
+ * @param string $email Email to check
+ * @return array Array with 'username' and 'email' keys (true if exists)
  */
 function checkExistingUser(PDO $pdo, string $username, string $email): array {
     $stmt = $pdo->prepare("

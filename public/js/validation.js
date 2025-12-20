@@ -1,13 +1,26 @@
 /**
  * Client-side validation matching backend rules
+ * 
+ * @class ClientValidator
  */
 class ClientValidator {
+    /**
+     * Create a new validator instance
+     * 
+     * @param {HTMLFormElement} form Form element to validate
+     * @param {Object} rules Validation rules object
+     */
     constructor(form, rules) {
         this.form = form;
         this.rules = rules;
         this.errors = {};
     }
 
+    /**
+     * Validate form data against rules
+     * 
+     * @returns {Object} Validation errors object
+     */
     validate() {
         this.errors = {};
         const formData = new FormData(this.form);
@@ -224,6 +237,13 @@ class ClientValidator {
         }
     }
 
+    /**
+     * Add an error message to a field
+     * 
+     * @param {string} field Field name
+     * @param {string} message Error message
+     * @returns {void}
+     */
     addError(field, message) {
         if (!this.errors[field]) {
             this.errors[field] = [];
@@ -231,10 +251,20 @@ class ClientValidator {
         this.errors[field].push(message);
     }
 
+    /**
+     * Check if there are any validation errors
+     * 
+     * @returns {boolean} True if there are errors
+     */
     hasErrors() {
         return Object.keys(this.errors).length > 0;
     }
 
+    /**
+     * Display validation errors in the form
+     * 
+     * @returns {void}
+     */
     displayErrors() {
         // Clear visual errors first (but keep this.errors intact)
         this.clearVisualErrors();
@@ -273,6 +303,11 @@ class ClientValidator {
         }
     }
 
+    /**
+     * Clear visual error indicators from form
+     * 
+     * @returns {void}
+     */
     clearVisualErrors() {
         // Remove error class from all inputs (including checkboxes)
         this.form.querySelectorAll('input.error, textarea.error, select.error').forEach(el => {
@@ -285,6 +320,11 @@ class ClientValidator {
         });
     }
 
+    /**
+     * Clear all errors (both object and visual)
+     * 
+     * @returns {void}
+     */
     clearErrors() {
         // Reset errors object
         this.errors = {};

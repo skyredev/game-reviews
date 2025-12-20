@@ -1,8 +1,20 @@
 <?php
 
+/**
+ * User controller - handles user profile pages
+ * 
+ * @package App\Controllers
+ */
+
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../models/GameModel.php';
 
+/**
+ * Show user profile page with user's games
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
 function showUserProfile(PDO $pdo): void {
     $userId = (int)($_GET['id'] ?? 0);
 

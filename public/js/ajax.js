@@ -1,5 +1,7 @@
 /**
  * AJAX requests for reviews, admin actions, etc.
+ * 
+ * @file ajax.js
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Review reactions (like/dislike)
@@ -200,6 +202,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        /**
+         * Submit game rejection via AJAX
+         * 
+         * @param {number} gameId Game ID to reject
+         * @param {string} reason Rejection reason
+         * @returns {void}
+         */
         function submitRejection(gameId, reason) {
             if (!gameId) {
                 console.error('Game ID is required for rejection');
