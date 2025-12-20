@@ -214,7 +214,7 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                     <?php endif; ?>
                     
                     <div class="form-row">
-                        <label for="rating">Hodnocení (1-10):</label>
+                        <label for="rating">Hodnocení (1-10)*:</label>
                         <div class="rating-stars">
                             <?php for ($i = 1; $i <= 10; $i++): ?>
                                 <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" <?= (int)($old['rating'] ?? 0) == $i ? 'checked' : '' ?> required>
@@ -228,7 +228,7 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                     </div>
                     
                     <div class="form-row">
-                        <label for="comment">Komentář:</label>
+                        <label for="comment">Komentář*:</label>
                         <textarea id="comment" name="comment" rows="5" required><?= htmlspecialchars($old['comment'] ?? '') ?></textarea>
                         <?php
                         $error = $errors['comment'] ?? null;

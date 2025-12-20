@@ -30,7 +30,7 @@
         </div>
 
         <div class="form-row">
-            <label>Platformy:</label>
+            <label>Platformy*:</label>
             <div class="multiselect">
                 <?php foreach ($platforms as $p): ?>
                     <label class="multiselect-option">
@@ -49,7 +49,7 @@
         </div>
 
         <div class="form-row">
-            <label>Žánry:</label>
+            <label>Žánry*:</label>
             <div class="multiselect">
                 <?php foreach ($genres as $g): ?>
                     <label class="multiselect-option">
@@ -68,7 +68,7 @@
         </div>
 
         <div class="form-row">
-            <label for="year">Rok vydání:</label>
+            <label for="year">Rok vydání*:</label>
             <input type="number" id="year" name="release_year"
                    min="1980" max="<?= date('Y') ?>"
                    value="<?= htmlspecialchars($old['release_year'] ?? '') ?>" required>
@@ -79,7 +79,7 @@
         </div>
 
         <div class="form-row">
-            <label for="description">Krátký popis:</label>
+            <label for="description">Krátký popis*:</label>
             <textarea id="description" name="description" rows="5" required><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
             <?php
             $error = $errors['description'] ?? null;
@@ -88,7 +88,7 @@
         </div>
 
         <div class="form-row">
-            <label for="developer">Vývojář:</label>
+            <label for="developer">Vývojář*:</label>
             <input type="text" id="developer" name="developer"
                    value="<?= htmlspecialchars($old['developer'] ?? '') ?>" required>
             <?php
@@ -98,7 +98,7 @@
         </div>
 
         <div class="form-row">
-            <label for="publisher">Vydavatel:</label>
+            <label for="publisher">Vydavatel*:</label>
             <input type="text" id="publisher" name="publisher"
                    value="<?= htmlspecialchars($old['publisher'] ?? '') ?>" required>
             <?php
@@ -108,7 +108,7 @@
         </div>
 
         <div class="form-row">
-            <label for="cover_image">Obrázek (obálka hry):</label>
+            <label for="cover_image">Obrázek (obálka hry)*:</label>
             <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
             <?php
             $error = $errors['cover_image'] ?? null;
