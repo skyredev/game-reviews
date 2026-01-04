@@ -1,4 +1,11 @@
 <?php
+/**
+ * Review item partial
+ * 
+ * @file App\Views\Partials\ReviewItem
+ * @var array $review Review data
+ * @var int|null $gameId Game ID
+ */
 $reviewUser = $review['username'] ?? '';
 $reviewAvatar = $review['avatar_path'] ?? null;
 $reviewDate = $review['updated_at'] && $review['updated_at'] != $review['created_at'] 
@@ -30,9 +37,7 @@ $userReaction = $review['user_reaction'] ?? null;
     </div>
 
     <?php if (!empty($review['comment'])): ?>
-        <div class="review-comment">
-            <?= nl2br(htmlspecialchars($review['comment'])) ?>
-        </div>
+        <div class="review-comment"><?= nl2br(htmlspecialchars($review['comment'])) ?></div>
     <?php endif; ?>
     
     <div class="review-reactions">

@@ -1,7 +1,8 @@
 <?php
 /**
- * @file config.php
- * @brief Global configuration file with .env loader
+ * Global configuration file with .env loader
+ * 
+ * @package App\Includes\Config
  */
 
 /**
@@ -52,7 +53,7 @@ try {
 } catch (Throwable $e) {
     http_response_code(500);
     echo "<h1>DB connection failed</h1>";
-    if (APP_DEBUG) echo "<pre>" . esc($e->getMessage()) . "</pre>";
+    if (APP_DEBUG) echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
     exit;
 }
 
@@ -73,5 +74,4 @@ require_once __DIR__ . '/services/auth.php';
 require_once __DIR__ . '/services/csrf.php';
 require_once __DIR__ . '/services/redirect.php';
 require_once __DIR__ . '/services/pagination.php';
-
 

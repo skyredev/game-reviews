@@ -1,9 +1,15 @@
 <?php
 
 /**
+ * Pagination state management functions
+ * 
+ * @package App\Includes\Services\Pagination
+ */
+
+/**
  * Save pagination parameters to session
  * 
- * @param string $key Unique key for pagination state (e.g., 'games', 'admin_users')
+ * @param string $key Unique key for pagination state (e.g., 'games', 'admin')
  * @param array $params Parameters to save (e.g., ['sort' => 'date_desc', 'page' => 3])
  */
 function savePaginationState(string $key, array $params): void {
@@ -26,27 +32,37 @@ function getPaginationState(string $key): array {
 /**
  * Build URL with pagination parameters
  * 
- * @param string $baseUrl Base URL (e.g., '/games')
+ * @param string $baseUrl Base URL path without query (e.g., '/games' or '/user')
  * @param string $key Pagination state key
- * @param array $overrideParams Parameters to override saved state
+ * @param array $overrideParams Parameters to override saved state (e.g., ['page' => 2, 'id' => 11])
  * @return string URL with query parameters
  */
 function buildPaginationUrl(string $baseUrl, string $key, array $overrideParams = []): string {
     $savedParams = getPaginationState($key);
     $params = array_merge($savedParams, $overrideParams);
     
-    // Remove page/page params if they are 1 (default)
-    foreach (['page', 'users_page', 'games_page'] as $pageParam) {
-        if (isset($params[$pageParam]) && $params[$pageParam] == 1) {
-            unset($params[$pageParam]);
-        }
+    // Parse existing query parameters from baseUrl (for cases like /user?id=11)
+    $urlParts = parse_url($baseUrl);
+    $basePath = $urlParts['path'] ?? $baseUrl;
+    $existingParams = [];
+    
+    if (isset($urlParts['query'])) {
+        parse_str($urlParts['query'], $existingParams);
+    }
+    
+    // Merge existing params with pagination params (pagination params take precedence)
+    $params = array_merge($existingParams, $params);
+    
+    // Remove page param if it is 1 (default)
+    if (isset($params['page']) && $params['page'] == 1) {
+        unset($params['page']);
     }
     
     if (empty($params)) {
-        return $baseUrl;
+        return $basePath;
     }
     
-    return $baseUrl . '?' . http_build_query($params);
+    return $basePath . '?' . http_build_query($params);
 }
 
 /**
@@ -63,13 +79,13 @@ function updatePaginationState(string $key, array $allowedParams = ['page', 'sor
         if (isset($_GET[$param])) {
             $params[$param] = $_GET[$param];
         } elseif (isset($savedParams[$param])) {
-            // Keep saved param if not in current GET
+            if ($param === 'page') {
+                continue;
+            }
             $params[$param] = $savedParams[$param];
         }
     }
     
-    if (!empty($params)) {
-        savePaginationState($key, $params);
-    }
+    savePaginationState($key, $params);
 }
 

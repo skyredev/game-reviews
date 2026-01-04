@@ -1,5 +1,8 @@
 <?php
 /**
+ * Small game card partial for admin panel
+ * 
+ * @file App\Views\Partials\GameCardSmallAdmin
  * @var array $game Game data (with author_username for admin view)
  */
 $covers = $game['covers'] ?? [];

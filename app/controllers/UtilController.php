@@ -3,7 +3,7 @@
 /**
  * Utility controller - handles error pages
  * 
- * @package App\Controllers
+ * @package App\Controllers\UtilController
  */
 
 /**

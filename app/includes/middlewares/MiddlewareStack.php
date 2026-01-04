@@ -3,7 +3,7 @@
 /**
  * Middleware stack for chaining multiple middlewares
  * 
- * @package App\Includes\Middlewares
+ * @package App\Includes\Middlewares\MiddlewareStack
  */
 class MiddlewareStack {
     private array $middlewares = [];
@@ -11,10 +11,10 @@ class MiddlewareStack {
     /**
      * Add middleware to stack
      * 
-     * @param MiddlewareInterface|callable $middleware Middleware instance or callable
+     * @param callable|MiddlewareInterface $middleware Middleware instance or callable
      * @return self
      */
-    public function add($middleware): self {
+    public function add(callable|MiddlewareInterface $middleware): self {
         $this->middlewares[] = $middleware;
         return $this;
     }

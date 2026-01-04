@@ -1,5 +1,8 @@
 <?php
 /**
+ * Game card partial for carousel/homepage
+ * 
+ * @file App\Views\Partials\GameCard
  * @var array $game Game data
  * @var int $index Card position index
  */

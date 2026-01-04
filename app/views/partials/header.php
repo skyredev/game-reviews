@@ -1,3 +1,10 @@
+<?php
+/**
+ * Site header navigation partial
+ * 
+ * @file App\Views\Partials\Header
+ */
+?>
 <nav class="nav-container">
     <a href="<?= APP_BASE ?>/" class="logo">
         <img src="<?= APP_BASE ?>/public/assets/icons/logo.svg" alt="Game Reviews logo" width="62" height="62">

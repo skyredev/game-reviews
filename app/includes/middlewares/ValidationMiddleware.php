@@ -3,7 +3,7 @@
 /**
  * Form validation middleware
  * 
- * @package App\Includes\Middlewares
+ * @package App\Includes\Middlewares\ValidationMiddleware
  */
 
 require_once __DIR__ . '/MiddlewareInterface.php';

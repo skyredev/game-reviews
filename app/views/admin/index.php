@@ -1,3 +1,15 @@
+<?php
+/**
+ * Admin panel view
+ * 
+ * @file App\Views\Admin\Index
+ * @var array $users List of users
+ * @var int $usersTotal Total count of users
+ * @var int $usersPages Total pages for users
+ * @var int $usersCurrentPage Current page for users
+ * @var array $stats Admin statistics
+ */
+?>
 <section class="admin-page">
     <?= csrfField() ?>
     <div class="page-header">
@@ -20,7 +32,7 @@
             <div class="stat-content">
                 <div class="stat-value"><?= $stats['games']['total'] ?></div>
                 <div class="stat-label">Hry</div>
-                <div class="stat-detail"><?= $stats['games']['active'] ?> aktivní, <?= $stats['games']['pending'] ?> čeká</div>
+                <div class="stat-detail"><?= $stats['games']['active'] ?> aktivní, <?= $stats['games']['pending'] ?> čeká, <?= $stats['games']['rejected'] ?> zamítnuté</div>
             </div>
         </div>
         
@@ -78,34 +90,18 @@
             </div>
             
             <?php
-            $baseUrl = buildPaginationUrl('/admin', 'admin');
-            $pageParam = 'users_page';
-            $currentPage = $usersCurrentPage;
-            $totalPages = $usersPages;
+            $baseUrl = '/admin';
+            $key = 'admin';
             require __DIR__ . '/../partials/pagination.php';
             ?>
         <?php endif; ?>
     </div>
     
-    <!-- Pending Games -->
-    <div class="admin-section">
+    <!-- Link to pending games -->
+    <div class="cta-section">
         <h2>Hry na schválení</h2>
-        <?php if (empty($games)): ?>
-            <p class="no-items">Žádné hry čekající na schválení.</p>
-        <?php else: ?>
-            <div class="games-grid">
-                <?php foreach ($games as $game): ?>
-                    <?php require __DIR__ . '/../partials/game-card-small-admin.php'; ?>
-                <?php endforeach; ?>
-            </div>
-            
-            <?php
-            $baseUrl = buildPaginationUrl('/admin', 'admin');
-            $pageParam = 'games_page';
-            $currentPage = $gamesCurrentPage;
-            $totalPages = $gamesPages;
-            require __DIR__ . '/../partials/pagination.php';
-            ?>
-        <?php endif; ?>
+        <p>
+            <a href="<?= APP_BASE ?><?= buildPaginationUrl('/pending-games', 'admin_pending') ?>" class="cta-button">Zobrazit hry na schválení (<?= $stats['games']['pending'] ?>)</a>
+        </p>
     </div>
 </section>

@@ -1,3 +1,12 @@
+<?php
+/**
+ * User login form view
+ * 
+ * @file App\Views\Auth\Login
+ * @var array $errors Validation errors
+ * @var array $old Old input data
+ */
+?>
 <h1 class="form-title">Přihlášení</h1>
 
 <form class="form-container" 

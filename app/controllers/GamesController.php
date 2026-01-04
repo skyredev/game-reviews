@@ -3,7 +3,7 @@
 /**
  * Games controller - handles game-related pages and actions
  * 
- * @package App\Controllers
+ * @package App\Controllers\GamesController
  */
 
 require_once __DIR__ . '/../models/GameModel.php';
@@ -18,8 +18,9 @@ require_once __DIR__ . '/../models/ReviewModel.php';
  */
 function showGamesPage(PDO $pdo): void {
     // Update pagination state
-    updatePaginationState('games', ['page', 'sort']);
-    
+    updatePaginationState('games');
+
+    $successMessage = getFlash('success_message');
     $page = max(1, (int)($_GET['page'] ?? 1));
     $perPage = 12;
     $sort = $_GET['sort'] ?? 'rating_desc';
@@ -31,7 +32,8 @@ function showGamesPage(PDO $pdo): void {
         'currentPage' => $result['current_page'],
         'totalPages' => $result['pages'],
         'total' => $result['total'],
-        'currentSort' => $sort
+        'currentSort' => $sort,
+        'successMessage' => $successMessage
     ]);
     $title = 'Hry';
     require __DIR__ . '/../views/layout.php';
@@ -89,7 +91,8 @@ function submitGame(PDO $pdo): void {
     // Use buildPaginationUrl to preserve pagination state
     require_once __DIR__ . '/../includes/services/pagination.php';
     $redirectUrl = buildPaginationUrl('/games', 'games');
-    redirectWithSuccess($redirectUrl, 'Hra byla úspěšně přidána.');
+    $successMessage = isAdmin() ? 'Hra byla úspěšně přidána a je nyní aktivní.' : 'Hra byla úspěšně přidána a čeká na schválení administrátorem.';
+    redirectWithSuccess($redirectUrl, $successMessage);
 }
 
 /**
@@ -151,7 +154,8 @@ function showGamePage(PDO $pdo): void {
     
     $errors = getFlash('review_errors') ?? [];
     $old = getFlash('review_old') ?? [];
-    
+    $successMessage = getFlash('success_message');
+
     // Get moderation info if game is rejected
     $rejectionInfo = null;
     if ($game['status'] === 'rejected') {
@@ -165,7 +169,8 @@ function showGamePage(PDO $pdo): void {
         'reviews' => $reviews,
         'errors' => $errors,
         'old' => $old,
-        'rejectionInfo' => $rejectionInfo
+        'rejectionInfo' => $rejectionInfo,
+        'successMessage' => $successMessage
     ]);
     $title = $game['title'];
     $fullWidth = true;
@@ -205,7 +210,7 @@ function submitReview(PDO $pdo): void {
         }
     }
     
-    redirect('/game?id=' . $gameId);
+    redirectWithSuccess('/game?id=' . $gameId, 'Recenze byla úspěšně uložena.');
 }
 
 /**

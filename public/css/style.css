@@ -144,7 +144,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* =========================================================
-   TYPO / COMMON COMPONENTS
+   COMMON COMPONENTS
 ========================================================= */
 .page-header {
     display: flex;
@@ -548,6 +548,7 @@ select[multiple] { height: 140px; }
 
 small.error { color: var(--danger); font-size: .8rem; }
 
+.success-message,
 .form-error-general {
     padding: .75rem 1rem;
     margin-bottom: 1.25rem;
@@ -555,7 +556,21 @@ small.error { color: var(--danger); font-size: .8rem; }
     border: 1px solid #fcc;
     border-radius: var(--radius);
 }
-.form-error-general .error { color: var(--danger-2); font-size: .95rem; font-weight: 500; }
+.success-message,
+.form-error-general .error,.success { color: var(--danger-2); font-size: .95rem; font-weight: 500; }
+
+.success-message {
+    background: var(--success-2);
+    border-color: var(--success);
+    opacity: 1;
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.success-message .success { color: #fff; }
+
+.success-message.fade-out {
+    opacity: 0;
+    transform: translateY(-6px);
+}
 
 .form-container button[type="submit"] {
     padding: .9rem;
@@ -687,7 +702,17 @@ small.error { color: var(--danger); font-size: .8rem; }
 }
 
 .game-info { max-width: 100%; overflow: hidden; }
-.game-info h1 { font-size: 2.5rem; margin: 0 0 1rem; font-weight: 700; }
+.game-info h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem;
+    font-weight: 700;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: .5rem;
+    word-break: break-word;
+    white-space: normal;
+}
 
 .game-description {
     font-size: 1rem;
@@ -873,9 +898,9 @@ small.error { color: var(--danger); font-size: .8rem; }
 
 .profile-header {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     margin-bottom: 3rem;
-    padding: 0 1rem;
+    padding: 0 .5rem;
     align-items: flex-start;
 }
 
@@ -884,8 +909,8 @@ small.error { color: var(--danger); font-size: .8rem; }
 }
 
 .avatar-large {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--border);
@@ -1324,6 +1349,10 @@ small.error { color: var(--danger); font-size: .8rem; }
     .page-header h1 { font-size: 1.75rem; }
     .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; }
     .game-card-small { width: 100%; }
+    .game-card-tags { height: 3.5rem }
+
+
+    .profile-info { max-width: 10rem; }
 
     .game-page { padding: 1rem 0; }
     .game-page-wrapper { width: 100%; padding: 0 1rem; }
@@ -1337,4 +1366,93 @@ small.error { color: var(--danger); font-size: .8rem; }
     .review-block { padding: 1rem; }
     .rating-stars { justify-content: center; }
     .form-actions { flex-direction: column; }
+}
+
+/* =========================================================
+   PRINT STYLES
+========================================================= */
+@media print {
+    /* Hide navigation and UI elements */
+    .site-header,
+    .site-footer,
+    .nav-container,
+    .nav-menu,
+    .mobile-menu-toggle,
+    .btn,
+    .btn-icon,
+    .pagination,
+    .page-header-actions,
+    .carousel-controls,
+    .carousel-prev,
+    .carousel-next,
+    .modal,
+    .reaction-btn,
+    .delete-review-btn,
+    .edit-review-btn,
+    .cancel-edit-btn,
+    .admin-toggle-btn,
+    .block-toggle-btn,
+    .approve-game-btn,
+    .cta-button,
+    .cta-section,
+    .form-container button[type="submit"],
+    .reject-game-btn {
+        display: none !important;
+    }
+
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .game-card,
+    .review-block,
+    .game-card-small,
+    .game-page-header {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        color: #000;
+    }
+
+    .page-header {
+        margin-bottom: 1rem;
+        padding: 0;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .review-block {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
 }

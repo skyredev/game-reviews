@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Helper functions for views, escaping, and image processing
+ * 
+ * @package App\Includes\Services\Helpers
+ */
+
+/**
  * Render a view file with data
  * 
  * @param string $view View name (without .php extension, relative to app/views/)
@@ -12,16 +18,6 @@ function renderView(string $view, array $data = []): string {
     ob_start();
     require BASE_DIR . '/app/views/' . $view . '.php';
     return ob_get_clean();
-}
-
-/**
- * Escape HTML special characters
- * 
- * @param string $string String to escape
- * @return string Escaped string
- */
-function esc(string $string): string {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
 /**

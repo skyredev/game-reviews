@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Game model - database operations for games
+ * 
+ * @package App\Models\GameModel
+ */
+
 require_once __DIR__ . '/../includes/services/helpers.php';
 
 /**
@@ -46,11 +52,11 @@ function uploadGameCovers(array $coverFile, int $gameId): ?array {
 }
 
 /**
- * Get top rated games (only active status)
+ * Get top-rated games (only active status)
  * 
  * @param PDO $pdo Database connection
  * @param int $limit Number of games to return
- * @return array Top rated games
+ * @return array Top-rated games
  */
 function getTopGames(PDO $pdo, int $limit = 10): array {
     $stmt = $pdo->prepare("
@@ -86,7 +92,6 @@ function getTopGames(PDO $pdo, int $limit = 10): array {
  * Get recently added games (excluding games from exclude list)
  * 
  * @param PDO $pdo Database connection
- * @param array $excludeIds Array of game IDs to exclude
  * @param int $limit Number of games to return
  * @return array Recently added games
  */
@@ -103,14 +108,15 @@ function getRecentGames(PDO $pdo, int $limit = 10): array {
             g.created_at,
             COALESCE(AVG(r.rating), 0) AS average_rating,
             COUNT(DISTINCT r.id) AS review_count,
-            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres
+            GROUP_CONCAT(DISTINCT CASE WHEN t.type = 'genre' THEN t.name END ORDER BY t.name SEPARATOR '|') AS genres,
+            (SELECT gm.created_at FROM game_moderations gm WHERE gm.game_id = g.id AND gm.type = 'approve' ORDER BY gm.created_at DESC LIMIT 1) as approved_at
         FROM games g
         LEFT JOIN reviews r ON g.id = r.game_id
         LEFT JOIN game_tags gt ON g.id = gt.game_id
         LEFT JOIN tags t ON gt.tag_id = t.id
         WHERE g.status = 'active'
         GROUP BY g.id, g.title, g.description, g.release_year, g.covers, g.developer, g.publisher, g.created_at
-        ORDER BY g.created_at DESC
+        ORDER BY COALESCE(approved_at, g.created_at) DESC
         LIMIT :limit
     ");
 

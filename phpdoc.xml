@@ -6,9 +6,9 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor
 /master/data/xsd/phpdoc.xsd"
 >
-    <title>Forms</title>
+    <title>Game Reviews</title>
     <paths>
-        <output>docs/api</output>
+        <output>docs/app</output>
         <cache>docs/cache</cache>
     </paths>
     <version number="3.0.0">

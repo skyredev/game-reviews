@@ -3,7 +3,7 @@
 /**
  * CSRF protection functions
  * 
- * @package App\Includes\Services
+ * @package App\Includes\Services\Csrf
  */
 
 /**

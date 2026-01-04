@@ -1,3 +1,14 @@
+<?php
+/**
+ * Game creation form view
+ * 
+ * @file App\Views\Games\Create
+ * @var array $genres List of genres
+ * @var array $platforms List of platforms
+ * @var array $errors Validation errors
+ * @var array $old Old input data
+ */
+?>
 <section class="game-create">
     <h1 class="form-title">Přidat novou hru</h1>
 
@@ -6,7 +17,7 @@
           method="POST"
           enctype="multipart/form-data"
           autocomplete="off"
-          data-validation-rules='{"title":[["required"],["string"],["min",1],["max",255]],"description":[["required"],["string"],["min",10]],"publisher":[["required"],["string"],["min",1],["max",255]],"developer":[["required"],["string"],["min",1],["max",255]],"release_year":[["required"],["year",1980]],"genres":[["required"],["array_not_empty"]],"platforms":[["required"],["array_not_empty"]],"cover_image":[["required"],["image"],["image_max_size",5242880]]}'>
+          data-validation-rules='{"title":[["required"],["string"],["min",1],["max",255]],"description":[["required"],["string"],["min",10]],"publisher":[["required"],["string"],["min",1],["max",255]],"developer":[["required"],["string"],["min",1],["max",255]],"release_year":[["required"],["year",1980]],"genres":[["required"],["array_not_empty"]],"platforms":[["required"],["array_not_empty"]],"cover_image":[["required"],["image"],["image_max_size",<?= 5 * 1024 * 1024 ?>]]}'>
         
         <?= csrfField() ?>
 
@@ -109,7 +120,7 @@
 
         <div class="form-row">
             <label for="cover_image">Obrázek (obálka hry)*:</label>
-            <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
+            <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp" required>
             <?php
             $error = $errors['cover_image'] ?? null;
             require __DIR__ . '/../partials/errors-tooltip.php';

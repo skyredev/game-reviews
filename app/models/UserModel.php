@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * User model - database operations for users
+ * 
+ * @package App\Models\UserModel
+ */
+
+/**
  * Get users with pagination
  * 
  * @param PDO $pdo Database connection
@@ -247,7 +253,7 @@ function getAdminStatistics(PDO $pdo): array {
         $gamesByStatus[$row['status']] = (int)$row['count'];
     }
     
-    // Average rating (from reviews)
+    // Average rating (from reviews, not by games)
     $stmt = $pdo->query("
         SELECT AVG(rating) as avg_rating 
         FROM reviews
@@ -269,6 +275,7 @@ function getAdminStatistics(PDO $pdo): array {
             'total' => $totalGames,
             'active' => $gamesByStatus['active'] ?? 0,
             'pending' => $gamesByStatus['pending'] ?? 0,
+            'rejected' => $gamesByStatus['rejected'] ?? 0
         ],
         'reviews' => [
             'total' => $totalReviews,

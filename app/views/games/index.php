@@ -1,4 +1,22 @@
+<?php
+/**
+ * Games list view
+ * 
+ * @file App\Views\Games\Index
+ * @var array $games List of games
+ * @var string|null $currentSort Current sort order
+ * @var string|null $successMessage Success message
+ */
+?>
 <section class="games-page">
+    <?php if (!empty($successMessage)): ?>
+        <div class="success-message">
+            <?php
+            $message = $successMessage;
+            require __DIR__ . '/../partials/success-tooltip.php';
+            ?>
+        </div>
+    <?php endif; ?>
     <div class="page-header">
         <h1>Seznam her</h1>
         <div class="page-header-actions">
@@ -27,8 +45,8 @@
         </div>
         
         <?php
-        $baseUrl = buildPaginationUrl('/games', 'games', ['sort' => $currentSort]);
-        $pageParam = 'page';
+        $baseUrl = '/games';
+        $key = 'games';
         require __DIR__ . '/../partials/pagination.php';
         ?>
     <?php endif; ?>

@@ -3,7 +3,7 @@
 /**
  * Authentication and authorization helper functions
  * 
- * @package App\Includes\Services
+ * @package App\Includes\Services\Auth
  */
 
 require_once __DIR__ . '/redirect.php';

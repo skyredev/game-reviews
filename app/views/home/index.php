@@ -1,11 +1,20 @@
+<?php
+/**
+ * Homepage view
+ * 
+ * @file App\Views\Home\Index
+ * @var array $topGames Top rated games
+ * @var array $recentGames Recently added games
+ */
+?>
 <section class="home-page">
     <h1>Vítejte na Game Reviews</h1>
-    <p>Objevte recenze nejnovějších her, hodnocení uživatelů a nejnovější herní zprávy.</p>
+    <p>Objevte recenze nejnovějších her, hodnocení uživatelů a nejlepší seznam her.</p>
 
     <!-- Top 10 Games Carousel -->
     <div class="top-games-container">
         <div class="top-games-header">
-            <h2>🏆 Top 10 Her</h2>
+            <h2>Top 10 Her</h2>
             <div class="carousel-controls">
                 <button class="carousel-btn carousel-prev" data-carousel="top" aria-label="Předchozí">
                     <img src="<?= APP_BASE ?>/public/assets/icons/arrow-left.svg" alt="Arrow-Left" width="24" height="24">

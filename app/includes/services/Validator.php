@@ -3,7 +3,7 @@
 /**
  * Validation class for form data and files
  * 
- * @package App\Includes\Services
+ * @package App\Includes\Services\Validator
  */
 class Validator {
     private array $errors = [];
@@ -128,23 +128,30 @@ class Validator {
                     if (!empty($value) && !empty($originalValue) && $value !== $originalValue) {
                         $this->addError($field, 'Hesla se neshodují.');
                     }
-                } else {
-                    // For other fields, use the parameter or default to field_confirmation
-                    $confirmField = $params[0] ?? $field . '_confirmation';
-                    $confirmValue = $this->data[$confirmField] ?? null;
-                    if (!empty($value) && $value !== $confirmValue) {
-                        $this->addError($field, 'Hodnoty se neshodují.');
-                    }
                 }
                 break;
 
             case 'image':
                 // Only validate if file was uploaded (not required by default)
                 if ($file !== null && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
-                    $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+                    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                    
+                    // Check MIME type
                     $mime = mime_content_type($file['tmp_name']);
-                    if (!in_array($mime, $allowed)) {
-                        $this->addError($field, 'Podporované formáty: JPG, PNG, WEBP, GIF.');
+                    if ($mime === false) {
+                        $mime = $file['type'] ?? '';
+                    }
+                    
+                    // Check file extension as fallback
+                    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    
+                    // Validate both MIME type and extension
+                    $mimeValid = in_array($mime, $allowedMimes);
+                    $extensionValid = in_array($extension, $allowedExtensions);
+                    
+                    if (!$mimeValid || !$extensionValid) {
+                        $this->addError($field, 'Podporované formáty: JPG, PNG, WEBP.');
                     }
                 } elseif ($file !== null && isset($file['error']) && $file['error'] !== UPLOAD_ERR_NO_FILE) {
                     // If file was attempted but failed, show error
@@ -153,7 +160,7 @@ class Validator {
                 break;
 
             case 'image_max_size':
-                $maxSize = $params[0] ?? 5242880; // 5MB default
+                $maxSize = $params[0] ?? (5 * 1024 * 1024); // 5MB default
                 if ($file !== null && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
                     if ($file['size'] > $maxSize) {
                         $maxSizeMB = round($maxSize / 1048576, 1);

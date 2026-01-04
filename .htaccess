@@ -1,21 +1,13 @@
-# --- Front controller + security for shared hosting (Apache 2.4) ---
+# --- Front controller + security ---
 php_value session.gc_maxlifetime 604800
 
 RewriteEngine On
 RewriteBase /~popovego/01/
 
-<FilesMatch "(^|/)(\.env|config\.php)$">
-    Require all denied
-</FilesMatch>
+RewriteRule ^(\.env|\.gitignore|phpdoc\.xml)$ - [F,NC,L]
 
-RewriteRule ^(app|controllers|includes|models|views)/ - [F,NC,L]
+RewriteRule ^app/ - [F,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L,QSA]
-
-<FilesMatch "\.php$">
-    <If "%{REQUEST_URI} =~ m#^/~popovego/01/public/#">
-        Require all denied
-    </If>
-</FilesMatch>

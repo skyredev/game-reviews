@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Middleware interface
+ * 
+ * @package App\Includes\Middlewares\MiddlewareInterface
+ */
 interface MiddlewareInterface {
     /**
      * Handle the request and pass to the next middleware

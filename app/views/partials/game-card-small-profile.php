@@ -1,5 +1,8 @@
 <?php
 /**
+ * Small game card partial for user profile
+ * 
+ * @file App\Views\Partials\GameCardSmallProfile
  * @var array $game Game data with status, approved_at, rejected_at
  */
 $covers = $game['covers'] ?? [];

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Authentication model - user registration and login
+ * 
+ * @package App\Models\AuthModel
+ */
+
 require_once __DIR__ . '/../includes/services/helpers.php';
 require_once __DIR__ . '/UserModel.php';
 
@@ -96,7 +102,7 @@ function createUser(PDO $pdo, string $username, string $email, string $password,
  * @param string $password Plain text password
  * @return array Array with [errors, user] - errors is empty array on success, user can be array or error status string ('NotFound', 'AccountLocked', 'WrongPassword')
  */
-function doLogin($pdo, $identifier, $password): array {
+function doLogin(PDO $pdo, string $identifier, string $password): array {
     $errors = [];
 
     $existing = getUserByIdentifier($pdo, $identifier, true);

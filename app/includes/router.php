@@ -1,9 +1,10 @@
 <?php
 /**
- * @file router.php
- * @brief Simple routing mechanism with middleware support
+ * Router - simple routing mechanism with middleware support
+ * 
+ * @package App\Includes\Router
  * @var PDO $pdo
-*/
+ */
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/middlewares/MiddlewareStack.php';
@@ -38,17 +39,6 @@ $routes = [
             new CsrfMiddleware('/game', 'review')
         ]
     ],
-    'api/review/delete' => [
-        'controller' => 'GamesController@deleteReview',
-        'middleware' => [
-            new AuthMiddleware('user'),
-            new CsrfMiddleware('/game', 'review')
-        ]
-    ],
-    'api/review/reaction' => [
-        'controller' => 'GamesController@toggleReaction',
-        'middleware' => [new AuthMiddleware('user')]
-    ],
     'games/create' => ['controller' => 'GamesController@showGamesCreatePage', 'middleware' => [new AuthMiddleware('user')]],
     'games/add' => [
         'controller' => 'GamesController@submitGame',
@@ -63,7 +53,7 @@ $routes = [
                 'release_year' => [['required'], ['year', 1980]],
                 'genres' => [['required'], ['array_not_empty']],
                 'platforms' => [['required'], ['array_not_empty']],
-                'cover_image' => [['required'], ['image'], ['image_max_size', 5242880]] // 5MB
+                'cover_image' => [['required'], ['image'], ['image_max_size', 5 * 1024 * 1024]] // 5MB
             ], '/games/create', 'game')
         ]
     ],
@@ -91,7 +81,7 @@ $routes = [
                 'email' => [['required'], ['email'], ['email_part_min', 4]],
                 'password' => [['required'], ['password']],
                 'password_confirmation' => [['required'], ['confirmed']],
-                'avatar' => [['image'], ['image_max_size', 2097152]] // 2MB
+                'avatar' => [['image'], ['image_max_size', 2 * 1024 * 1024]] // 2MB
             ], '/register', 'auth')
         ]
     ],
@@ -100,19 +90,17 @@ $routes = [
     'forbidden' => ['controller' => 'UtilController@showForbiddenPage', 'middleware' => []],
     'not-found' => ['controller' => 'UtilController@showNotFoundPage', 'middleware' => []],
     'admin' => ['controller' => 'AdminController@showAdminPage', 'middleware' => [new AuthMiddleware('admin')]],
-    'admin/game/approve' => [
-        'controller' => 'AdminController@approveGame',
+    'pending-games' => ['controller' => 'AdminController@showPendingGamesPage', 'middleware' => [new AuthMiddleware('admin')]],
+    'api/review/delete' => [
+        'controller' => 'GamesController@deleteReview',
         'middleware' => [
-            new AuthMiddleware('admin'),
-            new CsrfMiddleware('/admin', 'admin')
+            new AuthMiddleware('user'),
+            new CsrfMiddleware('/game', 'review')
         ]
     ],
-    'admin/game/reject' => [
-        'controller' => 'AdminController@rejectGame',
-        'middleware' => [
-            new AuthMiddleware('admin'),
-            new CsrfMiddleware('/admin', 'admin')
-        ]
+    'api/review/reaction' => [
+        'controller' => 'GamesController@toggleReaction',
+        'middleware' => [new AuthMiddleware('user')]
     ],
     'api/admin/game/approve' => [
         'controller' => 'AdminController@approveGame',

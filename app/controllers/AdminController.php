@@ -3,48 +3,64 @@
 /**
  * Admin controller - handles admin panel and moderation actions
  * 
- * @package App\Controllers
+ * @package App\Controllers\AdminController
  */
 
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../models/GameModel.php';
 
 /**
- * Show admin panel page with statistics and moderation lists
+ * Show admin panel page with statistics and users list
  * 
  * @param PDO $pdo Database connection
  * @return void
  */
 function showAdminPage(PDO $pdo): void {
-    // Update pagination state (both users_page and games_page)
-    updatePaginationState('admin', ['users_page', 'games_page']);
+    // Update pagination state
+    updatePaginationState('admin', ['page']);
     
     // Get statistics
     $stats = getAdminStatistics($pdo);
     
     // Get users pagination
-    $usersPage = max(1, (int)($_GET['users_page'] ?? 1));
-    $usersResult = getUsersPaginated($pdo, $usersPage, 10);
-    
-    // Get pending games pagination
-    $gamesPage = max(1, (int)($_GET['games_page'] ?? 1));
-    $gamesResult = getGamesPaginated($pdo, 'pending', $gamesPage, 12,'date_desc');
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $result = getUsersPaginated($pdo, $page, 10);
 
     $currentUser = currentUser();
     
     $content = renderView('admin/index', [
         'stats' => $stats,
-        'users' => $usersResult['users'],
-        'usersTotal' => $usersResult['total'],
-        'usersPages' => $usersResult['pages'],
-        'usersCurrentPage' => $usersResult['current_page'],
-        'games' => $gamesResult['games'],
-        'gamesTotal' => $gamesResult['total'],
-        'gamesPages' => $gamesResult['pages'],
-        'gamesCurrentPage' => $gamesResult['current_page'],
+        'users' => $result['users'],
+        'total' => $result['total'],
+        'totalPages' => $result['pages'],
+        'currentPage' => $result['current_page'],
         'currentUserId' => $currentUser['id'] ?? null
     ]);
     $title = 'Admin';
+    require __DIR__ . '/../views/layout.php';
+}
+
+/**
+ * Show pending games page
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
+function showPendingGamesPage(PDO $pdo): void {
+    // Update pagination state
+    updatePaginationState('admin_pending', ['page']);
+    
+    // Get pending games pagination
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $result = getGamesPaginated($pdo, 'pending', $page, 12, 'date_desc');
+    
+    $content = renderView('admin/pending-games', [
+        'games' => $result['games'],
+        'total' => $result['total'],
+        'totalPages' => $result['pages'],
+        'currentPage' => $result['current_page']
+    ]);
+    $title = 'Hry na schválení';
     require __DIR__ . '/../views/layout.php';
 }
 

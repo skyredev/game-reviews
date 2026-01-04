@@ -1,3 +1,12 @@
+<?php
+/**
+ * User registration form view
+ * 
+ * @file App\Views\Auth\Register
+ * @var array $errors Validation errors
+ * @var array $old Old input data
+ */
+?>
 <h1 class="form-title">Registrace</h1>
 
 <form class="form-container" 
@@ -5,7 +14,7 @@
       method="POST" 
       enctype="multipart/form-data" 
       autocomplete="off"
-      data-validation-rules='{"username":[["required"],["username"],["max",50]],"email":[["required"],["email"],["email_part_min",4]],"password":[["required"],["password"]],"password_confirmation":[["required"],["confirmed"]],"avatar":[["image"],["image_max_size",2097152]]}'>
+      data-validation-rules='{"username":[["required"],["username"],["max",50]],"email":[["required"],["email"],["email_part_min",4]],"password":[["required"],["password"]],"password_confirmation":[["required"],["confirmed"]],"avatar":[["image"],["image_max_size",<?= 2 * 1024 * 1024 ?>]]}'>
     
     <?= csrfField() ?>
 
@@ -66,7 +75,7 @@
 
     <div class="form-row">
         <label for="avatar">Profilový obrázek (volitelné):</label>
-        <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif"
+        <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/webp"
                class="<?= !empty($errors['avatar']) ? 'error' : '' ?>">
         <?php
         $error = $errors['avatar'] ?? null;

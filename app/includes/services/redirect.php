@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Redirect and flash message functions
+ * 
+ * @package App\Includes\Services\Redirect
+ */
+
+/**
  * Redirect to a URL
  * 
  * @param string $url URL to redirect to (without APP_BASE prefix)
@@ -18,7 +24,7 @@ function redirect(string $url): void {
  * @return array Input data without sensitive fields
  */
 function excludeSensitiveFields(array $input): array {
-    $excludedFields = ['password', 'password_confirmation', 'csrf_token', 'password_confirm'];
+    $excludedFields = ['password', 'password_confirmation', 'csrf_token'];
     foreach ($excludedFields as $field) {
         unset($input[$field]);
     }
@@ -46,7 +52,7 @@ function redirectWithErrors(string $url, array $errors, array $oldInput = [], st
  * @param string $message Success message
  * @param string $sessionKey Session key for storing message
  */
-function redirectWithSuccess(string $url, string $message, string $sessionKey = 'success'): void {
+function redirectWithSuccess(string $url, string $message, string $sessionKey = 'success_message'): void {
     $_SESSION[$sessionKey] = $message;
     redirect($url);
 }

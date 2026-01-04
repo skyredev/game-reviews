@@ -3,7 +3,7 @@
 /**
  * Home controller - handles homepage
  * 
- * @package App\Controllers
+ * @package App\Controllers\HomeController
  */
 
 require_once __DIR__ . '/../models/GameModel.php';

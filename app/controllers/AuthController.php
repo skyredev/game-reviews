@@ -3,7 +3,7 @@
 /**
  * Authentication controller - handles login, registration, logout
  * 
- * @package App\Controllers
+ * @package App\Controllers\AuthController
  */
 
 require_once __DIR__ . '/../models/AuthModel.php';

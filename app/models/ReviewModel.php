@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Review model - database operations for reviews and reactions
+ * 
+ * @package App\Models\ReviewModel
+ */
+
+/**
  * Get reviews for a game
  * 
  * @param PDO $pdo Database connection

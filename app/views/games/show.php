@@ -1,4 +1,14 @@
 <?php
+/**
+ * Game detail view
+ * 
+ * @file App\Views\Games\Show
+ * @var array $game Game data
+ * @var array $reviews List of reviews
+ * @var array|null $userReview Current user's review
+ * @var array $errors Validation errors
+ * @var array $old Old input data
+ */
 $covers = $game['covers'] ?? [];
 $coverImageFull = $covers['full'] ?? $covers['thumb_vertical'] ?? $covers['thumb_horizontal'] ?? 'public/assets/images/placeholder.png';
 $coverImageThumb = $covers['thumb_vertical'] ?? $covers['full'] ?? $covers['thumb_horizontal'] ?? 'public/assets/images/placeholder.png';
@@ -15,6 +25,14 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
         <?= csrfField() ?>
     <?php endif; ?>
     <div class="game-page-wrapper">
+        <?php if (!empty($successMessage)): ?>
+            <div class="success-message">
+                <?php
+                $message = $successMessage;
+                require __DIR__ . '/../partials/success-tooltip.php';
+                ?>
+            </div>
+        <?php endif; ?>
         <div class="game-page-header">
         <!-- Left: Cover Image -->
         <div class="game-cover">
@@ -166,7 +184,7 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                             <label for="edit_rating">Hodnocení (1-10):</label>
                             <div class="rating-stars">
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
-                                    <input type="radio" id="edit_star<?= $i ?>" name="rating" value="<?= $i ?>" <?= $userReview['rating'] == $i ? 'checked' : '' ?> required>
+                                    <input type="radio" id="edit_star<?= $i ?>" name="rating" value="<?= $i ?>" <?= $userReview['rating'] == $i ? 'checked' : '' ?>>
                                     <label for="edit_star<?= $i ?>" class="star-label"><?= $i ?></label>
                                 <?php endfor; ?>
                             </div>
@@ -212,12 +230,12 @@ $scoreClass = $reviewsCount == 0 ? 'none' : ($rating >= 7.5 ? 'high' : ($rating 
                             ?>
                         </div>
                     <?php endif; ?>
-                    
+
                     <div class="form-row">
-                        <label for="rating">Hodnocení (1-10)*:</label>
-                        <div class="rating-stars">
+                        <label for="star1">Hodnocení (1-10)*:</label>
+                        <div class="rating-stars" id="rating-stars">
                             <?php for ($i = 1; $i <= 10; $i++): ?>
-                                <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" <?= (int)($old['rating'] ?? 0) == $i ? 'checked' : '' ?> required>
+                                <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" <?= (int)($old['rating'] ?? 0) == $i ? 'checked' : '' ?>>
                                 <label for="star<?= $i ?>" class="star-label"><?= $i ?></label>
                             <?php endfor; ?>
                         </div>

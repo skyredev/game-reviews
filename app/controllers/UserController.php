@@ -3,7 +3,7 @@
 /**
  * User controller - handles user profile pages
  * 
- * @package App\Controllers
+ * @package App\Controllers\UserController
  */
 
 require_once __DIR__ . '/../models/UserModel.php';
@@ -42,11 +42,11 @@ function showUserProfile(PDO $pdo): void {
     
     // Update pagination state
     $paginationKey = 'user_' . $userId;
-    updatePaginationState($paginationKey, ['page', 'sort']);
+    updatePaginationState($paginationKey);
     
     // Get games pagination
     $page = max(1, (int)($_GET['page'] ?? 1));
-    $perPage = 8;
+    $perPage = 12;
     $sort = $_GET['sort'] ?? 'date_desc';
     
     $gamesResult = getGamesByUserPaginated($pdo, $userId, $page, $perPage, $sort);

@@ -3,7 +3,7 @@
 /**
  * Authentication middleware
  * 
- * @package App\Includes\Middlewares
+ * @package App\Includes\Middlewares\AuthMiddleware
  */
 
 require_once __DIR__ . '/MiddlewareInterface.php';

@@ -1,3 +1,18 @@
+<?php
+/**
+ * User profile view
+ * 
+ * @file App\Views\User\Profile
+ * @var array $user User data
+ * @var array $stats User statistics
+ * @var array $games List of user's games
+ * @var int $gamesTotal Total count of games
+ * @var int $gamesPages Total pages for games
+ * @var int $gamesCurrentPage Current page for games
+ * @var string $currentSort Current sort order
+ * @var int|null $currentUserId Current logged-in user ID
+ */
+?>
 <section class="user-profile">
     <?php if (isAdmin() && isset($currentUserId) && $currentUserId != $user['id']): ?>
         <?= csrfField() ?>
@@ -82,9 +97,8 @@
             </div>
             
             <?php
-            $paginationKey = 'user_' . $user['id'];
-            $baseUrl = buildPaginationUrl('/user?id=' . $user['id'], $paginationKey, ['sort' => $currentSort]);
-            $pageParam = 'page';
+            $baseUrl = '/user?id=' . $user['id'];
+            $key = 'user_' . $user['id'];
             require __DIR__ . '/../partials/pagination.php';
             ?>
         <?php endif; ?>

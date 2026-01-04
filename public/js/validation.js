@@ -23,64 +23,60 @@ class ClientValidator {
      */
     validate() {
         this.errors = {};
+
         const formData = new FormData(this.form);
         const data = {};
         const files = {};
 
-        // Convert FormData to objects
         for (const [key, value] of formData.entries()) {
+
             if (value instanceof File) {
                 files[key] = value;
+                continue;
+            }
+
+            const cleanKey = key.replace('[]', '');
+
+            if (key.endsWith('[]')) {
+                if (!data[cleanKey]) data[cleanKey] = [];
+                data[cleanKey].push(value);
+                continue;
+            }
+
+            if (data[cleanKey]) {
+                if (!Array.isArray(data[cleanKey])) {
+                    data[cleanKey] = [data[cleanKey]];
+                }
+                data[cleanKey].push(value);
             } else {
-                // Handle arrays (checkboxes with name="field[]")
-                if (key.endsWith('[]')) {
-                    const arrayKey = key.slice(0, -2);
-                    if (!data[arrayKey]) {
-                        data[arrayKey] = [];
-                    }
-                    data[arrayKey].push(value);
-                } else {
-                    // For radio buttons and regular fields, last value wins
-                    // For checkboxes with same name, collect all values
-                    if (key in data) {
-                        if (!Array.isArray(data[key])) {
-                            data[key] = [data[key]];
-                        }
-                        data[key].push(value);
-                    } else {
-                        data[key] = value;
-                    }
-                }
-            }
-        }
-        
-        // Convert single-item arrays back to values (for radio buttons)
-        // But keep arrays for fields that should be arrays (like genres[], platforms[])
-        const arrayFields = ['genres', 'platforms'];
-        for (const key in data) {
-            if (Array.isArray(data[key]) && data[key].length === 1 && !arrayFields.includes(key)) {
-                data[key] = data[key][0];
+                data[cleanKey] = value;
             }
         }
 
-        // Validate each field
-        for (const [field, fieldRules] of Object.entries(this.rules)) {
-            const value = data[field];
+        // Check radio buttons - if field is not in formData, check if any radio with that name is checked
+        for (const [field, rules] of Object.entries(this.rules)) {
+            let value = data[field];
             const file = files[field];
-
-            for (const rule of fieldRules) {
-                if (typeof rule === 'string') {
-                    this.applyRule(field, value, file, rule, []);
-                } else if (Array.isArray(rule)) {
-                    const ruleName = rule[0];
-                    const ruleParams = rule.slice(1);
-                    this.applyRule(field, value, file, ruleName, ruleParams);
+            
+            // For radio buttons if value is undefined, check if any radio with this name is checked
+            if (value === undefined) {
+                const radioInputs = this.form.querySelectorAll(`input[type="radio"][name="${field}"]`);
+                if (radioInputs.length > 0) {
+                    const checkedRadio = this.form.querySelector(`input[type="radio"][name="${field}"]:checked`);
+                    value = checkedRadio ? checkedRadio.value : undefined;
                 }
+            }
+
+            for (const rule of rules) {
+                const name = Array.isArray(rule) ? rule[0] : rule;
+                const params = Array.isArray(rule) ? rule.slice(1) : [];
+                this.applyRule(field, value, file, name, params);
             }
         }
 
         return this.errors;
     }
+
 
     applyRule(field, value, file, rule, params) {
         switch (rule) {
@@ -158,30 +154,33 @@ class ClientValidator {
                     if (value !== undefined && value !== null && value !== '' && originalValue && value !== originalValue) {
                         this.addError(field, 'Hesla se neshodují.');
                     }
-                } else {
-                    const confirmField = params[0] || field + '_confirmation';
-                    const confirmInput = this.form.querySelector(`[name="${confirmField}"]`);
-                    const confirmValue = confirmInput ? confirmInput.value : null;
-                    if (value !== undefined && value !== null && value !== '' && value !== confirmValue) {
-                        this.addError(field, 'Hodnoty se neshodují.');
-                    }
                 }
                 break;
 
             case 'image':
                 if (file !== undefined && file !== null && file.size > 0) {
-                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-                    if (!allowedTypes.includes(file.type)) {
-                        this.addError(field, 'Podporované formáty: JPG, PNG, WEBP, GIF.');
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                    
+                    // Check MIME type
+                    const mimeValid = allowedTypes.includes(file.type);
+                    
+                    // Check file extension as fallback
+                    const fileName = file.name.toLowerCase();
+                    const extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+                    const extensionValid = allowedExtensions.includes(extension);
+                    
+                    if (!mimeValid || !extensionValid) {
+                        this.addError(field, 'Podporované formáty: JPG, PNG, WEBP.');
                     }
                 }
                 break;
 
             case 'image_max_size':
-                const maxSize = params[0] || 5242880; // 5MB default
+                const maxSize = params[0] || (5 * 1024 * 1024); // 5MB default
                 if (file !== undefined && file !== null && file.size > 0) {
                     if (file.size > maxSize) {
-                        const maxSizeMB = Math.round(maxSize / 1048576 * 10) / 10;
+                        const maxSizeMB = (maxSize / 1048576).toFixed(1);
                         this.addError(field, `Obrázek nesmí být větší než ${maxSizeMB} MB.`);
                     }
                 }
@@ -283,6 +282,11 @@ class ClientValidator {
                 if (input.type === 'checkbox') {
                     this.form.querySelectorAll(`[name="${field}[]"]`).forEach(cb => {
                         cb.classList.add('error');
+                    });
+                } else if (input.type === 'radio') {
+                    // For radio buttons, add error class to all radios with this name
+                    this.form.querySelectorAll(`input[type="radio"][name="${field}"]`).forEach(radio => {
+                        radio.classList.add('error');
                     });
                 } else {
                     input.classList.add('error');

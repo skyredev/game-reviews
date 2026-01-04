@@ -1,5 +1,8 @@
 <?php
 /**
+ * Small game card partial for games list
+ * 
+ * @file App\Views\Partials\GameCardSmall
  * @var array $game Game data
  */
 $covers = $game['covers'] ?? [];

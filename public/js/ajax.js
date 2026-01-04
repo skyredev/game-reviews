@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const reviewId = this.dataset.reviewId;
             const reaction = this.dataset.reaction;
-            const btn = this;
-            
             const formData = new FormData();
             formData.append('review_id', reviewId);
             formData.append('reaction', reaction);
