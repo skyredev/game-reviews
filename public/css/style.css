@@ -1403,11 +1403,12 @@ small.error { color: var(--danger); font-size: .8rem; }
     * {
         box-shadow: none !important;
         text-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     body {
         background: #fff;
-        color: #000;
         font-size: 12pt;
         line-height: 1.5;
     }
@@ -1426,14 +1427,8 @@ small.error { color: var(--danger); font-size: .8rem; }
         page-break-inside: avoid;
     }
 
-    img {
-        max-width: 100%;
-        height: auto;
-    }
-
     h1, h2, h3, h4, h5, h6 {
         page-break-after: avoid;
-        color: #000;
     }
 
     .page-header {
@@ -1446,12 +1441,10 @@ small.error { color: var(--danger); font-size: .8rem; }
     }
 
     .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1rem;
     }
 
     .review-block {
-        border: 1px solid #ddd;
         padding: 1rem;
         margin-bottom: 1rem;
     }
