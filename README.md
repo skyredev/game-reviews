@@ -100,7 +100,7 @@ Registrace je dostupná na `/register` a vyžaduje následující údaje:
 
 Po úspěšné registraci je uživatel automaticky přihlášen a přesměrován na hlavní stránku.
 
-![img_1.png](img_1.png)
+![img_1.png](docs/user/img_1.png)
 
 ### Přihlášení
 
@@ -114,7 +114,7 @@ Přihlášení je dostupná na `/login`:
   - "Zadané heslo není správné"
   - "Váš účet byl zablokován. Kontaktujte administrátora."
 
-![img_2.png](img_2.png)
+![img_2.png](docs/user/img_2.png)
 
 ### Odhlášení
 
@@ -141,7 +141,7 @@ Zobrazuje:
 - `active` - aktivní, viditelná všem uživatelům (výchozí status pro nové hry od administrátorů)
 - `rejected` - zamítnutá administrátorem (viditelná pouze autorovi a administrátorům)
 
-![img_3.png](img_3.png)
+![img_3.png](docs/user/img_3.png)
 
 #### Seznam her (`/games`)
 
@@ -164,7 +164,7 @@ Při kliknutí na kartičku hry je uživatel přesměrován na detail hry (`/gam
 
 **Poznámka**: Datum přídání jak při jeho zobrazení, tak i při řazení vyhráva datum schválení hry administrátorem z tabulky `game_moderations`, pokud záznam pro tuto hru existuje, jinak se použije datum vytvoření hry, to platí pro všechna místa kde je zobrazeno datum přidání hry, či použito pro řazení.
 
-![img_4.png](img_4.png)
+![img_4.png](docs/user/img_4.png)
 
 #### Detail hry (`/game?id=X`)
 
@@ -183,8 +183,8 @@ Zobrazuje kompletní informace o hře:
 - Administrátoři vidí všechny hry bez ohledu na status
 - Pokud uživatel zkusí přistoupit k neaktivní hře, které není autorem, je přesměrován na `/forbidden`
 
-![img_5.png](img_5.png)
-![img_6.png](img_6.png)
+![img_5.png](docs/user/img_5.png)
+![img_6.png](docs/user/img_6.png)
 
 ### Přidání nové hry (`/games/create`)
 
@@ -218,7 +218,7 @@ Vyžaduje přihlášení jako běžný uživatel nebo admin.
 - Pokud validace selže, formulář se zobrazí znovu s chybovými hláškami (PRG)
 - Původní hodnoty (kromě obrázku a sensitive polí, což jsou `password`, `password_confirmation` a `csrf_token`) se zachovají v polích
 
-![img_7.png](img_7.png)
+![img_7.png](docs/user/img_7.png)
 
 ---
 
@@ -240,13 +240,13 @@ Recenzi lze napsat na stránce detailu hry (`/game?id=X`), pokud:
 - Pokud uživatel již má recenzi na hru, zobrazí se jeho stávající recenze
 - Recenze se řadí od nejnovějších po nejstarší
 
-![img_8.png](img_8.png)
+![img_8.png](docs/user/img_8.png)
 
 ### Úprava recenze
 
 Uživatel může upravit svou recenzi stejným formulářem na stránce detailu hry. Stačí změnit hodnoty a odeslat - systém automaticky pozná, že jde o aktualizaci.
 
-![img_9.png](img_9.png)
+![img_9.png](docs/user/img_9.png)
 
 ### Mazání recenze
 
@@ -270,7 +270,7 @@ Každý přihlášený uživatel může reagovat na recenze ostatních uživatel
 **Omezení**:
 - Uživatel může mít pouze jednu reakci na recenzi (buď like, nebo dislike, nebo žádná)
 
-![img_10.png](img_10.png)
+![img_10.png](docs/user/img_10.png)
 
 ---
 
@@ -292,7 +292,7 @@ Profil zobrazuje:
 - Administrátoři mohou vidět profily všech uživatelů
 - Pokud se pokusíte zobrazit cizí profil jako běžný uživatel, jste přesměrováni na `/forbidden`
 
-![img.png](img.png)
+![img.png](docs/user/img.png)
 
 ---
 
@@ -318,7 +318,7 @@ Zobrazuje:
     - Přepnutí admin role (AJAX, nelze sebe)
     - Blokování/odblokování uživatele (AJAX, nelze sebe)
 
-![img_11.png](img_11.png)
+![img_11.png](docs/user/img_11.png)
 
 ### Hry čekající na schválení (`/pending-games`)
 
@@ -336,10 +336,10 @@ U každé hry může administrátor:
 - Po schválení/zamítnutí se hra automaticky odstraní ze seznamu čekajících her
 - Informace o schválení/zamítnutí se ukládají do tabulky `game_moderations`
 
-![img_12.png](img_12.png)
-![img_13.png](img_13.png)
-![img_14.png](img_14.png)
-![img_15.png](img_15.png)
+![img_12.png](docs/user/img_12.png)
+![img_13.png](docs/user/img_13.png)
+![img_14.png](docs/user/img_14.png)
+![img_15.png](docs/user/img_15.png)
 
 ---
 
