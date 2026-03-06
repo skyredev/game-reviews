@@ -1,3 +1,4 @@
+# Semestral Web Apllications Project - Vanilla PHP, JS, HTML, CSS - no frameworks, no external dependencies.
 # Uživatelská dokumentace - Game Reviews Platforma
 
 ## Dokumentace
